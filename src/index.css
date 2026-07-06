@@ -15,48 +15,48 @@
 
 @layer base {
   :root {
-    --background: 0 0% 0%;
-    --foreground: 0 0% 100%;
-    --card: 0 0% 0%;
-    --card-foreground: 0 0% 100%;
-    --popover: 0 0% 0%;
-    --popover-foreground: 0 0% 100%;
-    --primary: 0 0% 0%;
+    --background: 0 0% 2%;
+    --foreground: 0 0% 98%;
+    --card: 0 0% 4%;
+    --card-foreground: 0 0% 98%;
+    --popover: 0 0% 4%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 0 72% 48%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 0 0% 10%;
-    --secondary-foreground: 0 0% 100%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 0 0% 12%;
-    --accent-foreground: 0 0% 100%;
-    --destructive: 0 84.2% 60.2%;
+    --secondary: 0 64% 24%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 0 0% 9%;
+    --muted-foreground: 0 0% 72%;
+    --accent: 0 45% 13%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 72% 45%;
     --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 221.2 83.2% 53.3%;
+    --border: 0 42% 22%;
+    --input: 0 0% 14%;
+    --ring: 0 72% 48%;
     --radius: 0.5rem;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 0 0% 0%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
+    --background: 0 0% 2%;
+    --foreground: 0 0% 98%;
+    --card: 0 0% 4%;
+    --card-foreground: 0 0% 98%;
+    --popover: 0 0% 4%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 0 72% 48%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 0 64% 24%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 0 0% 9%;
+    --muted-foreground: 0 0% 72%;
+    --accent: 0 45% 13%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 72% 45%;
     --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 224.3 76.3% 48%;
+    --border: 0 42% 22%;
+    --input: 0 0% 14%;
+    --ring: 0 72% 48%;
   }
 }
 
@@ -111,10 +111,10 @@
 
   .review-ribbon-card {
     position: relative;
-    background: #7e22ce;
-    border: 1px solid rgba(255, 255, 255, 0.86);
+    background: linear-gradient(135deg, rgba(127, 29, 29, 0.96), rgba(220, 38, 38, 0.88));
+    border: 1px solid rgba(248, 113, 113, 0.8);
     clip-path: polygon(0 8%, 50% 0, 100% 8%, 100% 92%, 50% 100%, 0 92%);
-    box-shadow: 0 0 22px rgba(168, 85, 247, 0.34);
+    box-shadow: 0 0 26px rgba(220, 38, 38, 0.32);
   }
 
   .transform-gpu {
@@ -155,27 +155,27 @@ body {
 }
 
 .btn-primary {
-  @apply bg-white text-black hover:bg-gray-200;
+  @apply bg-red-600 text-white hover:bg-red-700;
 }
 
 .btn-secondary {
-  @apply bg-secondary text-gray-800 hover:bg-yellow-500;
+  @apply bg-zinc-900 text-white hover:bg-red-950;
 }
 
 /* Card shadow */
 .card {
-  @apply bg-white/10 text-white p-4 rounded-lg shadow-lg transition-all duration-300;
+  @apply rounded-lg bg-zinc-950/90 p-4 text-white shadow-lg transition-all duration-300;
   backdrop-filter: blur(14px);
 }
 
 .product-sale-card {
   position: relative;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(248, 113, 113, 0.18);
   border-radius: 28px;
-  background: rgba(255, 255, 255, 0.08);
+  background: linear-gradient(180deg, rgba(17, 17, 17, 0.96), rgba(10, 10, 10, 0.98));
   backdrop-filter: blur(16px);
-  box-shadow: 0 0 0 rgba(255, 255, 255, 0);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.42);
   transition: transform 220ms ease, border-color 220ms ease, box-shadow 220ms ease;
 }
 
@@ -186,7 +186,7 @@ body {
   right: 20px;
   bottom: 0;
   height: 3px;
-  background: #fff;
+  background: linear-gradient(90deg, #991b1b, #ef4444);
   opacity: 0;
   transform: scaleX(0.35);
   transform-origin: center;
@@ -195,9 +195,9 @@ body {
 
 .product-sale-card:hover {
   transform: translateY(-4px);
-  border-color: rgba(255, 255, 255, 0.42);
-  background: rgba(255, 255, 255, 0.12);
-  box-shadow: 0 18px 34px rgba(255, 255, 255, 0.18);
+  border-color: rgba(248, 113, 113, 0.5);
+  background: linear-gradient(180deg, rgba(24, 24, 27, 0.98), rgba(10, 10, 10, 0.98));
+  box-shadow: 0 18px 40px rgba(127, 29, 29, 0.28);
 }
 
 .product-sale-card:hover::after {
@@ -216,11 +216,11 @@ body {
 
 /* Gradient backgrounds */
 .gradient-primary {
-  @apply bg-gradient-to-r from-white to-gray-400;
+  @apply bg-gradient-to-r from-red-700 via-red-600 to-red-500;
 }
 
 .gradient-secondary {
-  @apply bg-gradient-to-r from-yellow-300 to-secondary;
+  @apply bg-gradient-to-r from-zinc-900 to-red-950;
 }
 
 /* Enhanced link hover effects */
@@ -230,7 +230,7 @@ body {
 
 .link-hover::after {
   content: '';
-  @apply absolute bottom-0 left-0 w-0 h-0.5 bg-white transition-all duration-300 ease-in-out;
+  @apply absolute bottom-0 left-0 h-0.5 w-0 bg-red-500 transition-all duration-300 ease-in-out;
 }
 
 .link-hover:hover::after {
@@ -255,25 +255,25 @@ section {
 
 .text-primary,
 .hover\:text-primary:hover {
-  color: #fff !important;
-  text-shadow: none !important;
+  color: #f87171 !important;
+  text-shadow: 0 0 16px rgba(220, 38, 38, 0.2) !important;
 }
 
 .bg-primary {
-  background-color: #fff !important;
-  color: #000 !important;
+  background-color: #dc2626 !important;
+  color: #fff !important;
 }
 
 .border-primary,
 .border-primary\/30,
 .border-primary\/40 {
-  border-color: rgba(255, 255, 255, 0.35) !important;
+  border-color: rgba(220, 38, 38, 0.45) !important;
 }
 
 .bg-white,
 .dark\:bg-gray-800,
 .dark\:bg-gray-700 {
-  background-color: #050505 !important;
+  background-color: #09090b !important;
 }
 
 .text-gray-900,
@@ -293,13 +293,24 @@ section {
 .text-red-400,
 .text-red-300,
 .dark\:text-red-400 {
-  color: #fff !important;
+  color: #f87171 !important;
 }
 
 .bg-red-600,
 .bg-red-500 {
-  background-color: #fff !important;
-  color: #000 !important;
+  background-color: #dc2626 !important;
+  color: #fff !important;
 }
 
+.hover\:bg-white:hover,
+.hover\:bg-gray-200:hover,
+.hover\:text-black:hover {
+  background-color: #b91c1c !important;
+  color: #fff !important;
+}
+
+.focus\:ring-primary:focus,
+.focus\:ring-purple-500:focus {
+  --tw-ring-color: rgba(220, 38, 38, 0.65) !important;
+}
 

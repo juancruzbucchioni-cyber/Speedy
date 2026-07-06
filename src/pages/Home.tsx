@@ -118,11 +118,11 @@ export default function Home() {
 
   return (
     <section className="mx-auto w-full max-w-7xl px-4 py-6">
-      <div className="relative overflow-hidden rounded-md border border-white bg-black shadow-[0_0_36px_rgba(168,85,247,0.18)]">
+      <div className="relative overflow-hidden rounded-md border border-red-900/70 bg-black shadow-[0_0_36px_rgba(127,29,29,0.24)]">
         <div className="p-4 md:p-6">
           <Link
             to="/products"
-            className="block overflow-hidden rounded-3xl border border-white bg-white"
+            className="block overflow-hidden rounded-3xl border border-red-900/70 bg-zinc-950"
             aria-label="Ver productos Kazuty Parts"
           >
             <img
@@ -164,7 +164,7 @@ export default function Home() {
             <Link
               key={categoria}
               to={`/products?category=${encodeURIComponent(categoria)}`}
-              className="font-brand rounded-md border border-white/20 bg-zinc-950 px-4 py-3 text-center font-semibold text-white transition-colors hover:bg-white hover:text-black"
+              className="font-brand rounded-md border border-red-900/60 bg-zinc-950 px-4 py-3 text-center font-semibold text-white transition-colors hover:border-red-500 hover:bg-red-950 hover:text-red-100"
             >
               {categoria}
             </Link>
@@ -203,7 +203,7 @@ export default function Home() {
               href="https://www.instagram.com/juan.bucchioni"
               target="_blank"
               rel="noopener noreferrer"
-              className="rounded-md border border-white/40 px-6 py-3 font-bold text-white transition-colors hover:bg-white/10"
+              className="rounded-md border border-red-800/70 px-6 py-3 font-bold text-white transition-colors hover:bg-red-950/60 hover:text-red-100"
             >
               Ir a Instagram
             </a>
@@ -211,7 +211,7 @@ export default function Home() {
               href="https://wa.me/5493534128474?text=Hola%20Kazuty%20Parts%2C%20quiero%20hacer%20una%20consulta."
               target="_blank"
               rel="noopener noreferrer"
-              className="rounded-md bg-white px-6 py-3 font-bold text-black transition-colors hover:bg-gray-200"
+              className="rounded-md bg-red-600 px-6 py-3 font-bold text-white transition-colors hover:bg-red-700"
             >
               Enviar mensaje directo
             </a>
@@ -221,4 +221,3 @@ export default function Home() {
     </section>
   );
 }
-

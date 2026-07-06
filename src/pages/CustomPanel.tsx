@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Edit, Plus, RefreshCw, Save, Trash2 } from 'lucide-react';
 import { isSupabaseConfigured, supabase } from '../lib/supabase';
 import { useAuthStore } from '../store/authStore';
-import { Category, Offer, Product, ProductImage, Testimonial } from '../types/supabase';
+import { Category, Product, ProductImage } from '../types/supabase';
 import { formatARS } from '../lib/currency';
 
 type ProductForm = {
@@ -27,28 +27,30 @@ type CategoryForm = {
   orden: string;
 };
 
-type TestimonialForm = {
+type DebtorForm = {
   id?: string;
-  nombre: string;
-  mensaje: string;
-  foto_url: string;
-  activo: boolean;
-  orden: string;
-};
-
-type OfferForm = {
-  id?: string;
-  product_id: string;
-  title: string;
-  badge: string;
-  offer_price: string;
-  activo: boolean;
-  orden: string;
+  debtor_name: string;
+  amount_due: string;
+  product_name: string;
+  phone: string;
+  dni: string;
+  due_date: string;
 };
 
 type AdminCategory = Category & {
   activo?: boolean;
   orden?: number;
+};
+
+type AdminDebtor = {
+  id: string;
+  debtor_name: string;
+  phone?: string | null;
+  dni?: string | null;
+  product_name: string;
+  amount_due: number;
+  due_date?: string | null;
+  created_at: string;
 };
 
 type BulkProductRow = {
@@ -58,13 +60,6 @@ type BulkProductRow = {
   stock?: number;
   colors?: string[];
   image_url?: string;
-};
-
-type LocalTestimonial = {
-  nombre?: string;
-  mensaje?: string;
-  foto?: string;
-  foto_url?: string;
 };
 
 const emptyProduct: ProductForm = {
@@ -86,21 +81,13 @@ const emptyCategory: CategoryForm = {
   orden: '0',
 };
 
-const emptyTestimonial: TestimonialForm = {
-  nombre: '',
-  mensaje: '',
-  foto_url: '',
-  activo: true,
-  orden: '0',
-};
-
-const emptyOffer: OfferForm = {
-  product_id: '',
-  title: 'Oferta semanal',
-  badge: 'SALE',
-  offer_price: '',
-  activo: true,
-  orden: '0',
+const emptyDebtor: DebtorForm = {
+  debtor_name: '',
+  amount_due: '',
+  product_name: '',
+  phone: '',
+  dni: '',
+  due_date: '',
 };
 
 const fieldClass = 'w-full rounded-md border border-white/35 bg-black/60 px-3 py-2 text-sm text-white placeholder:text-gray-400 focus:border-white focus:outline-none';
@@ -199,42 +186,16 @@ function findMatchingProduct(row: BulkProductRow, productsByName: Map<string, Pr
   return undefined;
 }
 
-async function loadLocalTestimonials(): Promise<Testimonial[]> {
-  try {
-    const response = await fetch('/testimonials.json');
-    if (!response.ok) return [];
-    const data = await response.json();
-    if (!Array.isArray(data)) return [];
-
-    return (data as LocalTestimonial[])
-      .filter((item) => item.nombre && item.mensaje)
-      .map((item, index) => ({
-        id: `local-${index}`,
-        nombre: item.nombre || '',
-        mensaje: item.mensaje || '',
-        foto_url: item.foto_url || item.foto || '',
-        activo: true,
-        orden: index + 1,
-        created_at: new Date(0).toISOString(),
-      }));
-  } catch (error) {
-    console.error('No se pudieron cargar las resenas locales:', error);
-    return [];
-  }
-}
-
 export default function CustomPanel() {
   const { user, profile, loading } = useAuthStore();
-  const [activeTab, setActiveTab] = useState<'products' | 'categories' | 'offers' | 'testimonials'>('products');
+  const [activeTab, setActiveTab] = useState<'products' | 'categories' | 'debtors'>('products');
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<AdminCategory[]>([]);
-  const [offers, setOffers] = useState<Offer[]>([]);
-  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
+  const [debtors, setDebtors] = useState<AdminDebtor[]>([]);
   const [productImages, setProductImages] = useState<Record<string, ProductImage[]>>({});
   const [productForm, setProductForm] = useState<ProductForm>(emptyProduct);
   const [categoryForm, setCategoryForm] = useState<CategoryForm>(emptyCategory);
-  const [offerForm, setOfferForm] = useState<OfferForm>(emptyOffer);
-  const [testimonialForm, setTestimonialForm] = useState<TestimonialForm>(emptyTestimonial);
+  const [debtorForm, setDebtorForm] = useState<DebtorForm>(emptyDebtor);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [bulkText, setBulkText] = useState('');
@@ -259,19 +220,16 @@ export default function CustomPanel() {
   const loadData = async () => {
     if (!isSupabaseConfigured || !user) return;
 
-    const [{ data: productData }, { data: categoryData }, { data: offerData }, { data: testimonialData }, { data: imagesData }] = await Promise.all([
+    const [{ data: productData }, { data: categoryData }, { data: imagesData }, { data: debtorsData }] = await Promise.all([
       supabase.from('products').select('*').order('category', { ascending: true }).order('name', { ascending: true }),
       supabase.from('categories').select('*').order('orden', { ascending: true }).order('created_at', { ascending: false }),
-      supabase.from('offers').select('*, products(*)').order('orden', { ascending: true }).order('created_at', { ascending: false }),
-      supabase.from('testimonials').select('*').order('orden', { ascending: true }).order('created_at', { ascending: false }),
       supabase.from('product_images').select('*').order('display_order', { ascending: true }),
+      supabase.from('debtors').select('*').order('created_at', { ascending: false }),
     ]);
 
     setProducts((productData || []) as Product[]);
     setCategories((categoryData || []) as AdminCategory[]);
-    setOffers((offerData || []) as Offer[]);
-    const supabaseTestimonials = (testimonialData || []) as Testimonial[];
-    setTestimonials(supabaseTestimonials.length > 0 ? supabaseTestimonials : await loadLocalTestimonials());
+    setDebtors((debtorsData || []) as AdminDebtor[]);
 
     const groupedImages = ((imagesData || []) as ProductImage[]).reduce<Record<string, ProductImage[]>>((acc, image) => {
       acc[image.product_id] = [...(acc[image.product_id] || []), image];
@@ -525,83 +483,44 @@ export default function CustomPanel() {
     await loadData();
   };
 
-  const saveOffer = async (event: FormEvent) => {
+  const saveDebtor = async (event: FormEvent) => {
     event.preventDefault();
     setSaving(true);
     const payload = {
-      product_id: offerForm.product_id,
-      title: offerForm.title.trim(),
-      badge: offerForm.badge.trim() || 'SALE',
-      offer_price: offerForm.offer_price ? Number(offerForm.offer_price) : null,
-      activo: offerForm.activo,
-      orden: Number(offerForm.orden || 0),
+      debtor_name: debtorForm.debtor_name.trim(),
+      amount_due: Number(debtorForm.amount_due),
+      product_name: debtorForm.product_name.trim(),
+      phone: debtorForm.phone.trim() || null,
+      dni: debtorForm.dni.trim() || null,
+      due_date: debtorForm.due_date || null,
     };
-    const request = offerForm.id
-      ? supabase.from('offers').update(payload).eq('id', offerForm.id)
-      : supabase.from('offers').insert(payload);
+    const request = debtorForm.id
+      ? supabase.from('debtors').update(payload).eq('id', debtorForm.id)
+      : supabase.from('debtors').insert(payload);
     const { error } = await request;
-    setMessage(error ? `No se pudo guardar la oferta: ${error.message}` : 'Oferta guardada correctamente.');
-    setOfferForm(emptyOffer);
+    setMessage(error ? `No se pudo guardar el deudor: ${error.message}` : 'Deudor guardado correctamente.');
+    setDebtorForm(emptyDebtor);
     setSaving(false);
     await loadData();
   };
 
-  const editOffer = (offer: Offer) => {
-    setOfferForm({
-      id: offer.id,
-      product_id: offer.product_id || '',
-      title: offer.title || '',
-      badge: offer.badge || 'SALE',
-      offer_price: offer.offer_price ? String(offer.offer_price) : '',
-      activo: offer.activo,
-      orden: String(offer.orden || 0),
+  const editDebtor = (debtor: AdminDebtor) => {
+    setDebtorForm({
+      id: debtor.id,
+      debtor_name: debtor.debtor_name || '',
+      amount_due: String(debtor.amount_due || ''),
+      product_name: debtor.product_name || '',
+      phone: debtor.phone || '',
+      dni: debtor.dni || '',
+      due_date: debtor.due_date || '',
     });
-    setActiveTab('offers');
+    setActiveTab('debtors');
   };
 
-  const deleteOffer = async (offerId: string) => {
-    if (!confirm('Seguro que queres borrar esta oferta?')) return;
-    const { error } = await supabase.from('offers').delete().eq('id', offerId);
-    setMessage(error ? `No se pudo borrar: ${error.message}` : 'Oferta eliminada.');
-    await loadData();
-  };
-
-  const saveTestimonial = async (event: FormEvent) => {
-    event.preventDefault();
-    setSaving(true);
-    const payload = {
-      nombre: testimonialForm.nombre.trim(),
-      mensaje: testimonialForm.mensaje.trim(),
-      foto_url: testimonialForm.foto_url.trim(),
-      activo: testimonialForm.activo,
-      orden: Number(testimonialForm.orden || 0),
-    };
-    const request = testimonialForm.id
-      ? supabase.from('testimonials').update(payload).eq('id', testimonialForm.id)
-      : supabase.from('testimonials').insert(payload);
-    const { error } = await request;
-    setMessage(error ? `No se pudo guardar la resena: ${error.message}` : 'Resena guardada correctamente.');
-    setTestimonialForm(emptyTestimonial);
-    setSaving(false);
-    await loadData();
-  };
-
-  const editTestimonial = (testimonial: Testimonial) => {
-    setTestimonialForm({
-      id: testimonial.id.startsWith('local-') ? undefined : testimonial.id,
-      nombre: testimonial.nombre || '',
-      mensaje: testimonial.mensaje || '',
-      foto_url: testimonial.foto_url || '',
-      activo: testimonial.activo,
-      orden: String(testimonial.orden || 0),
-    });
-    setActiveTab('testimonials');
-  };
-
-  const deleteTestimonial = async (testimonialId: string) => {
-    if (!confirm('Seguro que queres borrar esta resena?')) return;
-    const { error } = await supabase.from('testimonials').delete().eq('id', testimonialId);
-    setMessage(error ? `No se pudo borrar: ${error.message}` : 'Resena eliminada.');
+  const deleteDebtor = async (debtorId: string) => {
+    if (!confirm('Seguro que queres borrar este deudor?')) return;
+    const { error } = await supabase.from('debtors').delete().eq('id', debtorId);
+    setMessage(error ? `No se pudo borrar: ${error.message}` : 'Deudor eliminado.');
     await loadData();
   };
 
@@ -645,7 +564,7 @@ export default function CustomPanel() {
         <div>
           <p className="text-sm font-bold uppercase tracking-widest text-white">Kazuty Parts</p>
           <h1 className="font-brand text-3xl text-white md:text-4xl">Panel administrador</h1>
-          <p className="mt-2 text-gray-300">Crea y edita productos, categorias, ofertas y resenas conectadas a Supabase.</p>
+          <p className="mt-2 text-gray-300">Administra productos, categorias y deudores guardados en Supabase.</p>
         </div>
         <button onClick={loadData} className="inline-flex items-center gap-2 rounded-md border border-white/50 bg-white/10 px-4 py-2 text-sm font-bold text-white">
           <RefreshCw className="h-4 w-4" />
@@ -656,8 +575,8 @@ export default function CustomPanel() {
       <div className="grid gap-4 md:grid-cols-4">
         <div className={panelClass}><p className="text-gray-400">Productos</p><p className="text-3xl font-black text-white">{products.length}</p></div>
         <div className={panelClass}><p className="text-gray-400">Categorias</p><p className="text-3xl font-black text-white">{categories.length}</p></div>
+        <div className={panelClass}><p className="text-gray-400">Deudores</p><p className="text-3xl font-black text-white">{debtors.length}</p></div>
         <div className={panelClass}><p className="text-gray-400">Stock total</p><p className="text-3xl font-black text-white">{stats.totalStock}</p></div>
-        <div className={panelClass}><p className="text-gray-400">Stock bajo</p><p className="text-3xl font-black text-white">{stats.lowStock}</p></div>
       </div>
 
       {message ? <div className="rounded-md border border-white/35 bg-white/10 p-3 text-gray-100">{message}</div> : null}
@@ -666,8 +585,7 @@ export default function CustomPanel() {
         {[
           ['products', 'Productos'],
           ['categories', 'Categorias'],
-          ['offers', 'Ofertas'],
-          ['testimonials', 'Resenas'],
+          ['debtors', 'Deudores'],
         ].map(([id, label]) => (
           <button
             key={id}
@@ -779,87 +697,54 @@ export default function CustomPanel() {
         </div>
       ) : null}
 
-      {activeTab === 'offers' ? (
+      {activeTab === 'debtors' ? (
         <div className="grid gap-6 lg:grid-cols-[420px_1fr]">
-          <form onSubmit={saveOffer} className={`${panelClass} space-y-3`}>
-            <h2 className="text-xl font-bold text-white">{offerForm.id ? 'Editar oferta' : 'Nueva oferta'}</h2>
-            <label className={labelClass}>
-              Producto
-              <select required className={fieldClass} value={offerForm.product_id} onChange={(e) => setOfferForm({ ...offerForm, product_id: e.target.value })}>
-                <option value="">Elegir producto</option>
-                {sortedProducts.map((product) => (
-                  <option key={product.id} value={product.id}>{product.name} - {product.category}</option>
-                ))}
-              </select>
-            </label>
-            <label className={labelClass}>Tipo de oferta<input required className={fieldClass} value={offerForm.title} placeholder="Oferta semanal, del mes, dia del padre..." onChange={(e) => setOfferForm({ ...offerForm, title: e.target.value })} /></label>
-            <label className={labelClass}>Badge<input className={fieldClass} value={offerForm.badge} placeholder="SALE, 20% OFF..." onChange={(e) => setOfferForm({ ...offerForm, badge: e.target.value })} /></label>
-            <label className={labelClass}>Precio oferta ARS<input type="number" min="0" className={fieldClass} value={offerForm.offer_price} placeholder="Vacio = precio del producto" onChange={(e) => setOfferForm({ ...offerForm, offer_price: e.target.value })} /></label>
-            <label className={labelClass}>Orden<input type="number" className={fieldClass} value={offerForm.orden} onChange={(e) => setOfferForm({ ...offerForm, orden: e.target.value })} /></label>
-            <label className="flex items-center gap-2 text-sm text-gray-200"><input type="checkbox" checked={offerForm.activo} onChange={(e) => setOfferForm({ ...offerForm, activo: e.target.checked })} /> Visible</label>
+          <form onSubmit={saveDebtor} className={`${panelClass} space-y-3`}>
+            <h2 className="text-xl font-bold text-white">{debtorForm.id ? 'Editar deudor' : 'Nuevo deudor'}</h2>
+            <label className={labelClass}>Nombre<input required className={fieldClass} value={debtorForm.debtor_name} onChange={(e) => setDebtorForm({ ...debtorForm, debtor_name: e.target.value })} /></label>
+            <label className={labelClass}>Precio que debe<input required type="number" min="0" className={fieldClass} value={debtorForm.amount_due} onChange={(e) => setDebtorForm({ ...debtorForm, amount_due: e.target.value })} /></label>
+            <label className={labelClass}>Producto que compro<input required className={fieldClass} value={debtorForm.product_name} onChange={(e) => setDebtorForm({ ...debtorForm, product_name: e.target.value })} /></label>
+            <div className="border-t border-white/10 pt-3">
+              <p className="mb-3 text-xs font-black uppercase tracking-[0.2em] text-gray-400">Opcional</p>
+              <div className="space-y-3">
+                <label className={labelClass}>Numero de celu<input className={fieldClass} value={debtorForm.phone} onChange={(e) => setDebtorForm({ ...debtorForm, phone: e.target.value })} /></label>
+                <label className={labelClass}>DNI<input className={fieldClass} value={debtorForm.dni} onChange={(e) => setDebtorForm({ ...debtorForm, dni: e.target.value })} /></label>
+                <label className={labelClass}>Cuando viene a pagar<input type="date" className={fieldClass} value={debtorForm.due_date} onChange={(e) => setDebtorForm({ ...debtorForm, due_date: e.target.value })} /></label>
+              </div>
+            </div>
             <div className="flex gap-2">
-              <button disabled={saving} className="inline-flex items-center gap-2 rounded-md bg-white px-4 py-2 font-bold text-white"><Save className="h-4 w-4" />Guardar oferta</button>
-              <button type="button" onClick={() => setOfferForm(emptyOffer)} className="rounded-md border border-white/20 px-4 py-2 text-gray-200">Limpiar</button>
+              <button disabled={saving} className="inline-flex items-center gap-2 rounded-md bg-white px-4 py-2 font-bold text-white"><Save className="h-4 w-4" />Guardar deudor</button>
+              <button type="button" onClick={() => setDebtorForm(emptyDebtor)} className="rounded-md border border-white/20 px-4 py-2 text-gray-200">Limpiar</button>
             </div>
           </form>
           <div className={`${panelClass} space-y-2`}>
-            {offers.length === 0 ? (
+            {debtors.length === 0 ? (
               <div className="rounded-md border border-white/10 bg-white/5 p-3 text-gray-300">
-                Todavia no hay ofertas cargadas.
+                Todavia no hay deudores cargados.
               </div>
             ) : null}
-            {offers.map((offer) => {
-              const product = offer.products || products.find((item) => item.id === offer.product_id);
-
-              return (
-                <div key={offer.id} className="flex items-center justify-between gap-3 rounded-md border border-white/10 bg-white/5 p-3 text-gray-200">
+            {debtors.map((debtor) => (
+              <div key={debtor.id} className="rounded-md border border-white/10 bg-white/5 p-4 text-gray-200">
+                <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
                   <div className="min-w-0">
-                    <p className="font-bold text-white">{offer.title}</p>
-                    <p className="text-sm text-gray-300">{product?.name || 'Producto no encontrado'} - {offer.badge || 'SALE'}</p>
-                    <p className="text-sm text-red-300">{offer.offer_price ? formatARS(Math.round(offer.offer_price)) : 'Usa precio del producto'} - Orden {offer.orden || 0} - {offer.activo ? 'Visible' : 'Oculta'}</p>
+                    <p className="text-xl font-bold text-white">{debtor.debtor_name}</p>
+                    <p className="mt-1 text-sm text-gray-300">{debtor.product_name}</p>
+                    {debtor.phone ? <p className="mt-2 text-sm text-gray-400">Cel: {debtor.phone}</p> : null}
+                    {debtor.dni ? <p className="text-sm text-gray-400">DNI: {debtor.dni}</p> : null}
+                    {debtor.due_date ? <p className="text-sm text-gray-400">Viene a pagar: {debtor.due_date}</p> : null}
                   </div>
-                  <div className="flex gap-2"><button onClick={() => editOffer(offer)} className="rounded bg-white/10 p-2"><Edit className="h-4 w-4" /></button><button onClick={() => deleteOffer(offer.id)} className="rounded bg-red-500/20 p-2 text-red-300"><Trash2 className="h-4 w-4" /></button></div>
+                  <div className="shrink-0 rounded-xl border border-red-700/80 bg-red-950/50 px-4 py-3 text-center">
+                    <p className="text-xs font-black uppercase tracking-[0.18em] text-red-300">Debe</p>
+                    <p className="mt-1 text-2xl font-black text-white">{formatARS(Math.round(debtor.amount_due || 0))}</p>
+                  </div>
                 </div>
-              );
-            })}
-          </div>
-        </div>
-      ) : null}
-
-      {activeTab === 'testimonials' ? (
-        <div className="grid gap-6 lg:grid-cols-[420px_1fr]">
-          <form onSubmit={saveTestimonial} className={`${panelClass} space-y-3`}>
-            <h2 className="text-xl font-bold text-white">{testimonialForm.id ? 'Editar resena' : 'Nueva resena'}</h2>
-            <label className={labelClass}>Nombre cliente<input required className={fieldClass} value={testimonialForm.nombre} onChange={(e) => setTestimonialForm({ ...testimonialForm, nombre: e.target.value })} /></label>
-            <label className={labelClass}>Mensaje<textarea required className={`${fieldClass} min-h-24`} value={testimonialForm.mensaje} onChange={(e) => setTestimonialForm({ ...testimonialForm, mensaje: e.target.value })} /></label>
-            <label className={labelClass}>Foto URL<input className={fieldClass} value={testimonialForm.foto_url} onChange={(e) => setTestimonialForm({ ...testimonialForm, foto_url: e.target.value })} /></label>
-            <label className={labelClass}>Orden<input type="number" className={fieldClass} value={testimonialForm.orden} onChange={(e) => setTestimonialForm({ ...testimonialForm, orden: e.target.value })} /></label>
-            <label className="flex items-center gap-2 text-sm text-gray-200"><input type="checkbox" checked={testimonialForm.activo} onChange={(e) => setTestimonialForm({ ...testimonialForm, activo: e.target.checked })} /> Visible</label>
-            <button disabled={saving} className="inline-flex items-center gap-2 rounded-md bg-white px-4 py-2 font-bold text-white"><Save className="h-4 w-4" />Guardar resena</button>
-          </form>
-          <div className={`${panelClass} space-y-2`}>
-            {testimonials.length === 0 ? (
-              <div className="rounded-md border border-white/10 bg-white/5 p-3 text-gray-300">
-                Todavia no hay resenas cargadas.
+                <div className="mt-3 flex items-center gap-2">
+                  <button onClick={() => editDebtor(debtor)} className="rounded bg-white/10 p-2"><Edit className="h-4 w-4" /></button>
+                  <button onClick={() => deleteDebtor(debtor.id)} className="rounded bg-red-500/20 p-2 text-red-300"><Trash2 className="h-4 w-4" /></button>
+                  <p className="ml-auto text-xs text-gray-500">{new Date(debtor.created_at).toLocaleDateString('es-AR')}</p>
+                </div>
               </div>
-            ) : null}
-            {testimonials.map((testimonial) => {
-              const isLocal = testimonial.id.startsWith('local-');
-
-              return (
-                <div key={testimonial.id} className="flex items-center justify-between gap-3 rounded-md border border-white/10 bg-white/5 p-3 text-gray-200">
-                  <div>
-                    <p className="font-bold text-white">{testimonial.nombre}</p>
-                    <p className="text-sm text-gray-300">{testimonial.mensaje}</p>
-                    {isLocal ? <p className="mt-1 text-xs font-bold text-purple-300">Resena local de la web. Toca editar y guardar para subirla a Supabase.</p> : null}
-                  </div>
-                  <div className="flex gap-2">
-                    <button onClick={() => editTestimonial(testimonial)} className="rounded bg-white/10 p-2" title={isLocal ? 'Copiar al formulario' : 'Editar resena'}><Edit className="h-4 w-4" /></button>
-                    {!isLocal ? <button onClick={() => deleteTestimonial(testimonial.id)} className="rounded bg-red-500/20 p-2 text-red-300"><Trash2 className="h-4 w-4" /></button> : null}
-                  </div>
-                </div>
-              );
-            })}
+            ))}
           </div>
         </div>
       ) : null}

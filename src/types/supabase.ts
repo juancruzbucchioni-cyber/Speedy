@@ -47,9 +47,11 @@ export type Review = {
 
 export type Order = {
   id: string;
-  user_id: string;
+  user_id: string | null;
   total_price: number;
   status: 'pending' | 'completed' | 'cancelled';
+  payment_method?: string | null;
+  source?: string | null;
   created_at: string;
 };
 
@@ -98,5 +100,4 @@ export type ProductDetails = Product & {
   category_image_url?: string;
   images?: ProductImage[];
 };
-
 

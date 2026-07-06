@@ -4,13 +4,13 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: '#A855F7',
-        secondary: '#6B7280',
-        background: '#F5F5F5',
-        darkBackground: '#0B0B0F',
-        text: '#0B0B0F',
-        textLight: '#A3A3A3',
-        borderColor: '#A3A3A3',
+        primary: '#DC2626',
+        secondary: '#991B1B',
+        background: '#050505',
+        darkBackground: '#020202',
+        text: '#F5F5F5',
+        textLight: '#B8B8B8',
+        borderColor: '#3F3F46',
         success: '#10B981',
         error: '#EF4444',
         magenta: {
@@ -61,4 +61,3 @@ export default {
   darkMode: 'class',
   plugins: [],
 };
-

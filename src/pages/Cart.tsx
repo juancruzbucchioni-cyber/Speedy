@@ -3,6 +3,7 @@ import { ShoppingCart, Trash2, ArrowLeft, Plus, Minus } from 'lucide-react';
 import { useCartStore } from '../store/cartStore';
 import { Link } from 'react-router-dom';
 import { formatARS } from '../lib/currency';
+import { isSupabaseConfigured, supabase } from '../lib/supabase';
 
 type PaymentMethod = 'efectivo' | 'transferencia';
 
@@ -26,6 +27,8 @@ export default function Cart() {
   const clearCart = useCartStore((state) => state.clearCart);
 
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('transferencia');
+  const [submitting, setSubmitting] = useState(false);
+  const [checkoutMessage, setCheckoutMessage] = useState('');
 
   const handleQuantityChange = (cartItemId: string, newQuantity: number) => {
     if (newQuantity <= 0) {
@@ -39,8 +42,52 @@ export default function Cart() {
   const shipping = 0;
   const total = subtotal + shipping;
 
-  const checkoutByWhatsApp = () => {
+  const checkoutByWhatsApp = async () => {
     if (cartItems.length === 0) return;
+
+    setSubmitting(true);
+    setCheckoutMessage('');
+
+    if (isSupabaseConfigured) {
+      const orderItems = cartItems.map((item) => ({
+        product_id: item.product_id,
+        quantity: item.quantity,
+        price: item.price,
+      }));
+
+      const { data, error } = await supabase.rpc('create_order_with_items', {
+        items: orderItems,
+        payment_method: paymentMethod,
+        order_source: 'web',
+      });
+
+      if (error) {
+        setCheckoutMessage(`No se pudo registrar la compra: ${error.message}`);
+        setSubmitting(false);
+        return;
+      }
+
+      const orderId = String(data);
+
+      const lines = cartItems.map((item, index) => {
+        const colorText = item.color ? ` | Color: ${item.color}` : '';
+        return `${index + 1}. ${item.name}${colorText} | Cantidad: ${item.quantity} | Unit: ${formatARS(Math.round(item.price))} | Subtotal: ${formatARS(Math.round(item.price * item.quantity))}`;
+      });
+
+      const message =
+        `Hola Kazuty Parts, ya hice el pedido ${orderId} desde la web.\n\n` +
+        `${lines.join('\n')}\n\n` +
+        `Forma de pago: ${paymentLabel(paymentMethod)}\n` +
+        `Total: ${formatARS(Math.round(total))}\n\n` +
+        `Quedo atento/a para coordinar.`;
+
+      const url = `https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(message)}`;
+      window.open(url, '_blank', 'noopener,noreferrer');
+      clearCart();
+      setCheckoutMessage(`Pedido ${orderId} registrado y stock descontado correctamente.`);
+      setSubmitting(false);
+      return;
+    }
 
     const lines = cartItems.map((item, index) => {
       const colorText = item.color ? ` | Color: ${item.color}` : '';
@@ -56,6 +103,7 @@ export default function Cart() {
 
     const url = `https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(message)}`;
     window.open(url, '_blank', 'noopener,noreferrer');
+    setSubmitting(false);
   };
 
   return (
@@ -124,6 +172,11 @@ export default function Cart() {
 
           <div className="bg-black/55 backdrop-blur-sm p-6 rounded-lg border border-primary/30 h-fit">
             <h2 className="text-xl font-semibold text-white mb-4">Resumen del pedido</h2>
+            {checkoutMessage ? (
+              <div className="mb-4 rounded-lg border border-red-800/70 bg-red-950/30 p-3 text-sm text-red-100">
+                {checkoutMessage}
+              </div>
+            ) : null}
             <div className="space-y-2 mb-4">
               <div className="flex justify-between text-gray-300">
                 <span>Subtotal ({cartItems.reduce((sum, item) => sum + item.quantity, 0)} items)</span>
@@ -158,10 +211,11 @@ export default function Cart() {
 
             <button
               onClick={checkoutByWhatsApp}
-              className="w-full flex items-center justify-center bg-white text-black px-6 py-3 rounded-lg hover:bg-gray-200 transition-colors btn-hover-scale"
+              disabled={submitting}
+              className="w-full flex items-center justify-center bg-white text-black px-6 py-3 rounded-lg hover:bg-gray-200 transition-colors btn-hover-scale disabled:cursor-not-allowed disabled:opacity-60"
             >
               <ShoppingCart className="h-5 w-5 mr-2" />
-              Comprar por WhatsApp
+              {submitting ? 'Procesando compra...' : 'Comprar por WhatsApp'}
             </button>
 
             <button

@@ -56,7 +56,7 @@ const ProductCard = memo(function ProductCard({
       onClick={handleQuickView}
       className="product-sale-card group flex h-full cursor-pointer flex-col will-change-transform"
     >
-      <div className="relative overflow-hidden rounded-t-[28px] bg-[#f1f1f1]">
+      <div className="relative overflow-hidden rounded-t-[28px] bg-zinc-900">
         <img
           src={product.image_url}
           alt={product.name}
@@ -64,11 +64,11 @@ const ProductCard = memo(function ProductCard({
           loading="lazy"
           decoding="async"
         />
-        <div className="absolute left-4 top-4 flex h-14 w-14 items-center justify-center rounded-full bg-emerald-400 text-center text-[11px] font-black uppercase leading-tight text-black">
+        <div className="absolute left-4 top-4 flex h-14 w-14 items-center justify-center rounded-full bg-red-700 text-center text-[11px] font-black uppercase leading-tight text-white">
           {isOnRequest ? 'Encargo' : 'Stock'}
         </div>
         {!isOnRequest && product.stock <= 5 && product.stock > 0 && (
-          <div className="absolute left-4 top-20 rounded-full bg-emerald-400 px-3 py-2 text-xs font-black uppercase text-black">
+          <div className="absolute left-4 top-20 rounded-full bg-red-950 px-3 py-2 text-xs font-black uppercase text-red-100">
             Quedan {product.stock}
           </div>
         )}
@@ -82,7 +82,7 @@ const ProductCard = memo(function ProductCard({
       </div>
 
       <div className="flex flex-grow flex-col border-t border-white/15 p-5 text-center">
-        <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.25em] text-emerald-400">
+        <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.25em] text-red-300">
           {product.category}
         </p>
         <h3 className="min-h-14 text-xl font-bold leading-tight text-white">
@@ -95,7 +95,7 @@ const ProductCard = memo(function ProductCard({
           <p className="text-3xl font-black leading-none text-white">
             {formatProductPrice(Math.round(product.price))}
           </p>
-          <p className="mt-2 text-sm font-black uppercase leading-tight text-emerald-400">
+          <p className="mt-2 text-sm font-black uppercase leading-tight text-red-300">
             {isOnRequest ? 'Producto por encargo' : 'Precio especial por transferencia'}
           </p>
         </div>
@@ -105,7 +105,7 @@ const ProductCard = memo(function ProductCard({
             disabled={!isOnRequest && product.stock === 0}
             className={`flex items-center justify-center gap-2 rounded-full py-3 text-sm font-black uppercase transition-all duration-300 active:scale-95 ${
               product.stock > 0 || isOnRequest
-                ? 'bg-white text-black hover:bg-gray-200'
+                ? 'bg-red-600 text-white hover:bg-red-700'
                 : 'cursor-not-allowed bg-gray-500/60 text-gray-300'
             }`}
             aria-label={isOnRequest ? 'Consultar por WhatsApp' : product.stock > 0 ? (isInCart ? 'Actualizar carrito' : 'Agregar al carrito') : 'Sin stock'}
@@ -115,7 +115,7 @@ const ProductCard = memo(function ProductCard({
           </button>
           <button
             onClick={handleQuickView}
-            className="flex items-center justify-center gap-2 rounded-full border border-white/70 py-3 text-sm font-black uppercase text-white transition-all duration-300 hover:bg-white hover:text-black"
+            className="flex items-center justify-center gap-2 rounded-full border border-red-700/80 py-3 text-sm font-black uppercase text-white transition-all duration-300 hover:bg-red-950 hover:text-red-100"
             aria-label="Ver producto"
           >
             <Eye className="h-4 w-4" />

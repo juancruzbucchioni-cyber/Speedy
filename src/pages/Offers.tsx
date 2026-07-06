@@ -75,7 +75,7 @@ export default function Offers() {
 
   return (
     <section className="mx-auto w-full max-w-7xl px-4 py-8">
-      <div className="mb-12 rounded-full border border-white bg-white px-6 py-3 text-center text-sm font-black uppercase tracking-[0.24em] text-black shadow-[0_0_22px_rgba(255,255,255,0.16)]">
+      <div className="mb-12 rounded-full border border-red-800/80 bg-zinc-950 px-6 py-3 text-center text-sm font-black uppercase tracking-[0.24em] text-white shadow-[0_0_22px_rgba(127,29,29,0.18)]">
         Ofertas
       </div>
 
@@ -109,7 +109,7 @@ export default function Offers() {
                   Sale
                 </span>
 
-                <div className="flex h-72 items-center justify-center border-b border-white/20 bg-white/75 p-4">
+                <div className="flex h-72 items-center justify-center border-b border-red-950/60 bg-zinc-900 p-4">
                   <img
                     src={offer.product.image_url}
                     alt={offer.product.name}

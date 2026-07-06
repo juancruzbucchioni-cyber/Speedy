@@ -74,7 +74,7 @@ export default function FeaturedProductos() {
       <div className="mt-8 text-center">
         <Link
           to="/products"
-          className="inline-block px-6 py-3 bg-primary text-white rounded-md hover:bg-white hover:text-black transition-colors btn-hover-scale btn-hover-shadow"
+          className="inline-block rounded-md bg-primary px-6 py-3 text-white transition-colors hover:bg-red-700 btn-hover-scale btn-hover-shadow"
         >
           Ver todos los productos
         </Link>
@@ -82,5 +82,4 @@ export default function FeaturedProductos() {
     </div>
   );
 }
-
 
