@@ -1,11 +1,11 @@
-﻿import { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { LogOut, Search, ShoppingCart, User } from 'lucide-react';
 import { useCartStore } from '../store/cartStore';
 import { useAuthStore } from '../store/authStore';
 
-const INSTAGRAM_URL = 'https://www.instagram.com/juan.bucchioni';
-const WHATSAPP_URL = 'https://wa.me/5493534128474?text=Hola%20Kazuty%20Parts%2C%20quiero%20consultar%20por%20productos.';
+const INSTAGRAM_URL = 'https://www.instagram.com/speedyrepuestos/';
+const WHATSAPP_URL = 'https://wa.me/5403534099785?text=Hola%20Speedy%20Repuestos%2C%20quiero%20consultar%20por%20productos.';
 
 export default function Navbar() {
   const cartItems = useCartStore((state) => state.items);
@@ -17,7 +17,7 @@ export default function Navbar() {
   const location = useLocation();
   const { user, profile, signOut } = useAuthStore();
   const displayName = profile?.username || user?.email?.split('@')[0] || 'Mi cuenta';
-  const isAdminPanel = location.pathname === '/kazuty-control-8474';
+  const isAdminPanel = location.pathname === '/admin-speedy';
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 90);
@@ -64,7 +64,8 @@ export default function Navbar() {
             <span className="text-red-900/80">|</span>
             <a href={INSTAGRAM_URL} target="_blank" rel="noreferrer" className="min-w-20 px-2 text-center transition-colors hover:text-red-400">Instagram</a>
             <span className="text-red-900/80">|</span>
-            <a href={WHATSAPP_URL} target="_blank" rel="noreferrer" className="min-w-20 px-2 text-center transition-colors hover:text-red-400">Contacto</a>
+            <a href={WHATSAPP_URL} target="_blank" rel="noreferrer" className="min-w-20 px-2 text-center transition-colors hover:text-red-400">03534099785</a>
+            <a href={WHATSAPP_URL} target="_blank" rel="noreferrer" className="min-w-20 px-2 text-center transition-colors hover:text-red-400">03534099785</a>
           </div>
         )}
 
@@ -97,7 +98,7 @@ export default function Navbar() {
                   </Link>
                   <button onClick={handleSignOut} className="flex w-full items-center px-4 py-2 text-left text-sm hover:bg-red-950/50">
                     <LogOut className="mr-2 h-4 w-4" />
-                    Cerrar sesión
+                    Cerrar sesi�n
                   </button>
                 </div>
               )}

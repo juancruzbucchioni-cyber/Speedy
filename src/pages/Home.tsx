@@ -55,7 +55,7 @@ export default function Home() {
 
       setClientReviews([
         {
-          nombre: 'Cliente Kazuty Parts',
+          nombre: 'Cliente Speedy Repuestos',
           mensaje: 'Excelente atencion, me ayudaron a elegir justo lo que necesitaba.',
           foto: DEFAULT_REVIEW_AVATAR,
         },
@@ -196,11 +196,13 @@ export default function Home() {
 
       <div className="mt-16 w-full">
         <div className="mx-auto max-w-3xl rounded-xl border border-white/10 bg-zinc-950 p-6 text-center shadow-sm md:p-8">
-          <p className="text-2xl font-black tracking-wide text-white">@juan.bucchioni</p>
-          <p className="mt-3 text-gray-200">Seguinos para novedades, ingresos y promos.</p>
+          <p className="text-sm font-black uppercase tracking-[0.24em] text-red-300">Envios a todo el pais</p>
+          <p className="mt-3 text-2xl font-black tracking-wide text-white">03534099785</p>
+          <p className="mt-3 text-gray-200">@speedyrepuestos</p>
+          <p className="mt-2 text-gray-300">Seguinos para novedades, ingresos y promos.</p>
           <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
             <a
-              href="https://www.instagram.com/juan.bucchioni"
+              href="https://www.instagram.com/speedyrepuestos/"
               target="_blank"
               rel="noopener noreferrer"
               className="rounded-md border border-red-800/70 px-6 py-3 font-bold text-white transition-colors hover:bg-red-950/60 hover:text-red-100"
@@ -208,7 +210,7 @@ export default function Home() {
               Ir a Instagram
             </a>
             <a
-              href="https://wa.me/5493534128474?text=Hola%20Kazuty%20Parts%2C%20quiero%20hacer%20una%20consulta."
+              href="https://wa.me/5403534099785?text=Hola%20Speedy%20Repuestos%2C%20quiero%20hacer%20una%20consulta."
               target="_blank"
               rel="noopener noreferrer"
               className="rounded-md bg-red-600 px-6 py-3 font-bold text-white transition-colors hover:bg-red-700"

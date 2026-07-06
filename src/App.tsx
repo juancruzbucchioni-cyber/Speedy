@@ -81,7 +81,7 @@ function App() {
           <Route path="/sitemap" element={<Sitemap />} />
           <Route path="/categories" element={<Categories />} />
           <Route path="/profile" element={<Profile />} />
-          <Route path="/kazuty-control-8474" element={<CustomPanel />} />
+          <Route path="/admin-speedy" element={<CustomPanel />} />
         </Routes>
       </main>
 
@@ -94,5 +94,4 @@ function App() {
 }
 
 export default App;
-
 
