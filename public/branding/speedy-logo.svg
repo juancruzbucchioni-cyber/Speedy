@@ -1,0 +1,9 @@
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1600 520' role='img' aria-labelledby='speedyTitle speedyDesc'>
+  <title id='speedyTitle'>Speedy Repuestos</title>
+  <desc id='speedyDesc'>Logo de Speedy Repuestos en blanco y rojo sobre fondo negro.</desc>
+  <rect width='1600' height='520' fill='#000000'/>
+  <text x='120' y='235' fill='#ffffff' font-family='Rajdhani, Arial, sans-serif' font-size='220' font-style='italic' font-weight='700' letter-spacing='6'>SPEEDY</text>
+  <path d='M160 300 L1410 300 L1260 370 L420 370 Z' fill='#e10613'/>
+  <text x='560' y='395' fill='#ffffff' font-family='Rajdhani, Arial, sans-serif' font-size='120' font-style='italic' font-weight='700' letter-spacing='4'>REPUESTOS</text>
+  <path d='M500 420 L1260 420 L1250 435 L490 435 Z' fill='#e10613'/>
+</svg>
