@@ -18,15 +18,18 @@
   "author": "Danipa Bernales",
   "license": "MIT",
   "type": "module",
+  "engines": {
+    "node": ">=20.19.0"
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
+    "postinstall": "echo postinstall skipped",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "test": "echo \"No tests specified\" && exit 0",
     "check-migrations": "node scripts/check-migrations.js",
-    "deploy": "node scripts/deploy.js",
-    "postinstall": "npm run build"
+    "deploy": "node scripts/deploy.js"
   },
   "dependencies": {
     "@base-ui/react": "^1.4.1",
