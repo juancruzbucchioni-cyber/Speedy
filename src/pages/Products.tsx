@@ -9,23 +9,7 @@ import { Product } from '../types/supabase';
 import { Filter } from 'lucide-react';
 import { formatARS } from '../lib/currency';
 
-const motoModels = [
-  { label: '110cc', keywords: ['110cc', '110'] },
-  { label: 'CG / Titan / S2', keywords: ['cg', 'titan', 's2'] },
-  { label: 'Tornado / XR', keywords: ['tornado', 'xr'] },
-  { label: 'Skua', keywords: ['skua'] },
-  { label: 'Rouser', keywords: ['rouser'] },
-  { label: 'Twister', keywords: ['twister'] },
-  { label: 'Wave / Biz', keywords: ['wave', 'biz'] },
-  { label: 'Motomel / Corven / Zanella', keywords: ['motomel', 'corven', 'zanella'] },
-];
-
-function normalizeText(value: string) {
-  return value
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .toLowerCase();
-}
+const motoModels = ['110cc', 'CG / Titan / S2', 'Tornado / XR', 'Skua', 'Rouser', 'Twister', 'Wave / Biz', 'Motomel / Corven / Zanella'];
 
 export default function ProductosPage() {
   const [products, setProductos] = useState<Product[]>([]);
@@ -77,6 +61,10 @@ export default function ProductosPage() {
     // Apply category filter
     if (selectedCategory) {
       query = query.eq('category', selectedCategory);
+    }
+
+    if (selectedModel) {
+      query = query.eq('motorcycle_model', selectedModel);
     }
     
     // Apply price range filter
@@ -168,7 +156,7 @@ export default function ProductosPage() {
     }, 300); // Add a small delay to prevent rapid re-fetching
 
     return () => clearTimeout(debounceTimer);
-  }, [selectedCategory, priceRange, searchQuery, sortBy]);
+  }, [selectedCategory, selectedModel, priceRange, searchQuery, sortBy]);
 
   const resetFiltros = () => {
     setSelectedCategory('');
@@ -177,18 +165,10 @@ export default function ProductosPage() {
     setSortBy('');
   };
 
-  const visibleProducts = useMemo(() => {
-    const selectedModelConfig = motoModels.find((model) => model.label === selectedModel);
-
-    return [...products]
-      .filter((product) => {
-        if (!selectedModelConfig) return true;
-
-        const searchableText = normalizeText(`${product.name} ${product.category} ${product.description || ''}`);
-        return selectedModelConfig.keywords.some((keyword) => searchableText.includes(normalizeText(keyword)));
-      })
-      .sort((a, b) => a.name.localeCompare(b.name, 'es', { sensitivity: 'base' }));
-  }, [products, selectedModel]);
+  const visibleProducts = useMemo(
+    () => [...products].sort((a, b) => a.name.localeCompare(b.name, 'es', { sensitivity: 'base' })),
+    [products]
+  );
 
   const handleQuickView = (e: React.MouseEvent, product: Product) => {
     e.preventDefault();
@@ -301,17 +281,17 @@ export default function ProductosPage() {
                   </label>
                 </div>
                 {motoModels.map((model) => (
-                  <div key={model.label} className="flex items-center">
+                  <div key={model} className="flex items-center">
                     <input
                       type="radio"
-                      id={`model-${model.label}`}
+                      id={`model-${model}`}
                       name="model"
-                      checked={selectedModel === model.label}
-                      onChange={() => setSelectedModel(model.label)}
+                      checked={selectedModel === model}
+                      onChange={() => setSelectedModel(model)}
                       className="h-4 w-4 text-primary accent-primary"
                     />
-                    <label htmlFor={`model-${model.label}`} className="font-brand ml-2 text-gray-200">
-                      {model.label}
+                    <label htmlFor={`model-${model}`} className="font-brand ml-2 text-gray-200">
+                      {model}
                     </label>
                   </div>
                 ))}

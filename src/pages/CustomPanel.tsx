@@ -13,6 +13,7 @@ type ProductForm = {
   price: string;
   stock: string;
   category: string;
+  motorcycle_model: string;
   image_url: string;
   colors: string;
   extra_images: string;
@@ -69,6 +70,7 @@ type BulkProductRow = {
   category?: string;
   price?: number;
   stock?: number;
+  motorcycle_model?: string;
   colors?: string[];
   image_url?: string;
 };
@@ -79,6 +81,7 @@ const emptyProduct: ProductForm = {
   price: '',
   stock: '1',
   category: '',
+  motorcycle_model: '',
   image_url: '',
   colors: 'Negro, Blanco, Gris',
   extra_images: '',
@@ -113,6 +116,7 @@ const fieldClass = 'w-full rounded-md border border-white/35 bg-black/60 px-3 py
 const labelClass = 'text-sm font-semibold text-gray-200';
 const panelClass = 'rounded-lg border border-white/30 bg-black/60 p-4 backdrop-blur-sm';
 const sharedBrandImage = '/branding/speedy-logo-final.png';
+const motorcycleModels = ['110cc', 'CG / Titan / S2', 'Tornado / XR', 'Skua', 'Rouser', 'Twister', 'Wave / Biz', 'Motomel / Corven / Zanella'];
 
 function splitList(value: string) {
   return value
@@ -160,11 +164,12 @@ function parseBulkCatalog(text: string): BulkProductRow[] {
       }
 
       const name = line
-        .replace(/\b(categoria|cat|precio|stock|colores?|color|imagen|foto|url)\s*[:=]\s*[^|;]+/gi, '')
+        .replace(/\b(categoria|cat|modelo|moto|precio|stock|colores?|color|imagen|foto|url)\s*[:=]\s*[^|;]+/gi, '')
         .replace(/\$\s*[\d.,]+/g, '')
         .replace(/\s{2,}/g, ' ')
         .trim();
       const category = line.match(/\b(?:categoria|cat)\s*[:=]\s*([^|;]+)/i)?.[1]?.trim();
+      const motorcycleModel = line.match(/\b(?:modelo|moto)\s*[:=]\s*([^|;]+)/i)?.[1]?.trim();
       const price = parseMoney(line.match(/(?:\$|precio\s*[:=]\s*)([\d.,]+)/i)?.[1] || '');
       const stockMatch = line.match(/\bstock\s*[:=]?\s*(\d+)/i);
       const colors = line.match(/\bcolores?\s*[:=]\s*([^|;]+)/i)?.[1];
@@ -173,6 +178,7 @@ function parseBulkCatalog(text: string): BulkProductRow[] {
       return {
         name,
         category,
+        motorcycle_model: motorcycleModel,
         price,
         stock: stockMatch ? Number(stockMatch[1]) : undefined,
         colors: colors ? splitList(colors) : undefined,
@@ -245,7 +251,7 @@ export default function CustomPanel() {
     if (!search) return sortedProducts;
 
     return sortedProducts.filter((product) =>
-      normalizeMatch(`${product.name} ${product.category} ${product.description || ''}`).includes(search)
+      normalizeMatch(`${product.name} ${product.category} ${product.motorcycle_model || ''} ${product.description || ''}`).includes(search)
     );
   }, [productSearch, sortedProducts]);
 
@@ -308,13 +314,14 @@ export default function CustomPanel() {
     setMessage('');
 
     const payload = {
-      name: productForm.name.trim(),
-      description: productForm.description.trim(),
-      price: productForm.price.trim() === '' ? 0 : Number(productForm.price),
-      stock: Number(productForm.stock),
-      category: productForm.category.trim(),
-      image_url: productForm.image_url.trim(),
-      colors: splitList(productForm.colors),
+        name: productForm.name.trim(),
+        description: productForm.description.trim(),
+        price: productForm.price.trim() === '' ? 0 : Number(productForm.price),
+        stock: Number(productForm.stock),
+        category: productForm.category.trim(),
+        motorcycle_model: productForm.motorcycle_model.trim() || null,
+        image_url: productForm.image_url.trim(),
+        colors: splitList(productForm.colors),
     };
 
     const request = productForm.id
@@ -385,6 +392,7 @@ export default function CustomPanel() {
         price: row.price ?? currentProduct?.price ?? 0,
         stock: row.stock ?? currentProduct?.stock ?? 0,
         category: row.category || currentProduct?.category || '',
+        motorcycle_model: row.motorcycle_model || currentProduct?.motorcycle_model || null,
         image_url: row.image_url || currentProduct?.image_url || '/branding/speedy-logo.svg',
         colors: row.colors && row.colors.length > 0 ? row.colors : currentProduct?.colors || ['Consultar'],
       };
@@ -435,6 +443,7 @@ export default function CustomPanel() {
       price: String(product.price || ''),
       stock: String(product.stock || 0),
       category: product.category || '',
+      motorcycle_model: product.motorcycle_model || '',
       image_url: product.image_url || '',
       colors: (product.colors || []).join(', '),
       extra_images: (productImages[product.id] || [])
@@ -770,7 +779,16 @@ export default function CustomPanel() {
               <label className={labelClass}>Precio ARS (opcional)<input type="number" min="0" placeholder="Deja vacio para consultar" className={fieldClass} value={productForm.price} onChange={(e) => setProductForm({ ...productForm, price: e.target.value })} /></label>
               <label className={labelClass}>Stock<input required type="number" min="0" className={fieldClass} value={productForm.stock} onChange={(e) => setProductForm({ ...productForm, stock: e.target.value })} /></label>
             </div>
-            <label className={labelClass}>Categoria<input required list="admin-categories" className={fieldClass} value={productForm.category} onChange={(e) => setProductForm({ ...productForm, category: e.target.value })} /></label>
+            <div className="grid grid-cols-2 gap-3">
+              <label className={labelClass}>Categoria<input required list="admin-categories" className={fieldClass} value={productForm.category} onChange={(e) => setProductForm({ ...productForm, category: e.target.value })} /></label>
+              <label className={labelClass}>
+                Modelo de moto
+                <select className={fieldClass} value={productForm.motorcycle_model} onChange={(e) => setProductForm({ ...productForm, motorcycle_model: e.target.value })}>
+                  <option value="">Sin modelo</option>
+                  {motorcycleModels.map((model) => <option key={model} value={model}>{model}</option>)}
+                </select>
+              </label>
+            </div>
             <datalist id="admin-categories">{categories.map((category) => <option key={category.id} value={category.name} />)}</datalist>
             <label className={labelClass}>
               Imagen principal
@@ -817,7 +835,7 @@ export default function CustomPanel() {
                 className={`${fieldClass} min-h-36 font-mono text-xs`}
                 value={bulkText}
                 onChange={(event) => setBulkText(event.target.value)}
-                placeholder={`Escape GRS - Escapes - 250000 - 3 - rojo, negro\nKit cilindro 190 - Motor - 148373 - 2\nFiltro XR precio=35000 stock=6 categoria=Accesorios`}
+                placeholder={`Escape GRS - Escapes - 250000 - 3 - rojo, negro\nKit cilindro 190 - Motor - 148373 - 2\nFiltro XR precio=35000 stock=6 categoria=Accesorios modelo=Tornado / XR`}
               />
               <div className="rounded-md border border-green-400/80 bg-green-500/15 p-3 text-xs text-green-100 shadow-[0_0_22px_rgba(34,197,94,0.22)]">
                 <p className="font-black uppercase tracking-wide text-green-300">Formato recomendado:</p>
@@ -838,10 +856,10 @@ export default function CustomPanel() {
 
             <div className={`${panelClass} overflow-x-auto`}>
               <table className="w-full min-w-[760px] text-left text-sm">
-                <thead className="text-white"><tr><th className="p-2">Producto</th><th className="p-2">Categoria</th><th className="p-2">Precio</th><th className="p-2">Stock</th><th className="p-2">Acciones</th></tr></thead>
+                <thead className="text-white"><tr><th className="p-2">Producto</th><th className="p-2">Categoria</th><th className="p-2">Modelo</th><th className="p-2">Precio</th><th className="p-2">Stock</th><th className="p-2">Acciones</th></tr></thead>
                 <tbody>{filteredProducts.map((product) => (
                   <tr key={product.id} className="border-t border-white/10 text-gray-200">
-                    <td className="p-2">{product.name}</td><td className="p-2">{product.category}</td><td className="p-2 text-white">{product.price > 0 ? formatARS(Math.round(product.price)) : 'Consultar precio'}</td><td className="p-2">{product.stock}</td>
+                    <td className="p-2">{product.name}</td><td className="p-2">{product.category}</td><td className="p-2">{product.motorcycle_model || 'Sin modelo'}</td><td className="p-2 text-white">{product.price > 0 ? formatARS(Math.round(product.price)) : 'Consultar precio'}</td><td className="p-2">{product.stock}</td>
                     <td className="flex gap-2 p-2"><button onClick={() => editProduct(product)} className="rounded bg-white/10 p-2"><Edit className="h-4 w-4" /></button><button onClick={() => deleteProduct(product.id)} className="rounded bg-red-500/20 p-2 text-red-300"><Trash2 className="h-4 w-4" /></button></td>
                   </tr>
                 ))}</tbody>

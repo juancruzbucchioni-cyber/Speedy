@@ -5,6 +5,7 @@
   price: number;
   image_url: string;
   category: string;
+  motorcycle_model?: string | null;
   stock: number;
   created_at: string;
   category_id?: string;
@@ -100,4 +101,3 @@ export type ProductDetails = Product & {
   category_image_url?: string;
   images?: ProductImage[];
 };
-
