@@ -19,9 +19,10 @@ export default function Sitemap() {
       icon: <ShoppingBag className="h-5 w-5 text-primary" />,
       links: [
         { name: 'Todos los productos', path: '/products' },
-        { name: 'Cascos', path: '/products?category=Cascos' },
-        { name: 'Indumentaria', path: '/products?category=Indumentaria' },
-        { name: 'Repuestos', path: '/products?category=Repuestos' }
+        { name: 'Repuestos', path: '/products?category=Repuestos' },
+        { name: 'Accesorios', path: '/products?category=Accesorios' },
+        { name: 'Cascos e indumentaria', path: '/products?category=Cascos%20e%20indumentaria' },
+        { name: 'Cubiertas y cámaras', path: '/products?category=Cubiertas%20y%20c%C3%A1maras' }
       ]
     },
     {

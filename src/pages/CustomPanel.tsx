@@ -835,7 +835,7 @@ export default function CustomPanel() {
                 className={`${fieldClass} min-h-36 font-mono text-xs`}
                 value={bulkText}
                 onChange={(event) => setBulkText(event.target.value)}
-                placeholder={`Escape GRS - Escapes - 250000 - 3 - rojo, negro\nKit cilindro 190 - Motor - 148373 - 2\nFiltro XR precio=35000 stock=6 categoria=Accesorios modelo=Tornado / XR`}
+                placeholder={`Escape GRS - Estética y tuning - 250000 - 3 - rojo, negro\nKit transmisión CG - Transmisión - 148373 - 2\nFiltro XR precio=35000 stock=6 categoria=Repuestos modelo=Tornado / XR`}
               />
               <div className="rounded-md border border-green-400/80 bg-green-500/15 p-3 text-xs text-green-100 shadow-[0_0_22px_rgba(34,197,94,0.22)]">
                 <p className="font-black uppercase tracking-wide text-green-300">Formato recomendado:</p>

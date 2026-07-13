@@ -165,7 +165,17 @@ export default function Home() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {(categoriesWithProducts.length > 0
             ? categoriesWithProducts
-            : ['Accesorios', 'Escapes', 'Plasticos', 'Transmision', 'Electronica', 'Frenos', 'Iluminacion', 'Indumentaria']
+            : [
+              'Repuestos',
+              'Accesorios',
+              'Cascos e indumentaria',
+              'Cubiertas y cámaras',
+              'Aceites y lubricantes',
+              'Transmisión',
+              'Frenos',
+              'Electricidad',
+              'Estética y tuning',
+            ]
           ).map((categoria) => (
             <Link
               key={categoria}

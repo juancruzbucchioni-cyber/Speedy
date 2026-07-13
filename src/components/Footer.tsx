@@ -23,9 +23,11 @@ export default function Footer() {
           <div>
             <h3 className="font-brand mb-4 text-lg font-semibold text-white">Categorías</h3>
             <ul className="space-y-2 text-gray-200">
+              <li><Link to="/products?category=Repuestos" className="hover:text-white hover:underline">Repuestos</Link></li>
               <li><Link to="/products?category=Accesorios" className="hover:text-white hover:underline">Accesorios</Link></li>
-              <li><Link to="/products?category=Escapes" className="hover:text-white hover:underline">Escapes</Link></li>
-              <li><Link to="/products?category=Plasticos" className="hover:text-white hover:underline">Plásticos</Link></li>
+              <li><Link to="/products?category=Cascos%20e%20indumentaria" className="hover:text-white hover:underline">Cascos e indumentaria</Link></li>
+              <li><Link to="/products?category=Cubiertas%20y%20c%C3%A1maras" className="hover:text-white hover:underline">Cubiertas y cámaras</Link></li>
+              <li><Link to="/products?category=Aceites%20y%20lubricantes" className="hover:text-white hover:underline">Aceites y lubricantes</Link></li>
             </ul>
           </div>
 

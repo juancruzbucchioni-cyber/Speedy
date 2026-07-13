@@ -58,14 +58,15 @@ CREATE INDEX IF NOT EXISTS idx_categories_activo_orden
 INSERT INTO public.categories (name, description, image_url, activo, orden)
 SELECT * FROM (
   VALUES
-    ('Accesorios', 'Accesorios para personalizar y proteger tu moto', '/branding/logo.png', true, 1),
-    ('Escapes', 'Escapes deportivos y de alto rendimiento', '/branding/logo.png', true, 2),
-    ('Plasticos', 'Plasticos, kits y tapas para tu moto', '/branding/logo.png', true, 3),
-    ('Transmision', 'Piñon, corona, cadena y componentes', '/branding/logo.png', true, 4),
-    ('Electronica', 'CDI, ECU, bobinas, estatores y mas', '/branding/logo.png', true, 5),
-    ('Frenos', 'Pastillas, discos y componentes de freno', '/branding/logo.png', true, 6),
-    ('Iluminacion', 'Luces, faros, giros y accesorios', '/branding/logo.png', true, 7),
-    ('Indumentaria', 'Guantes, cascos e indumentaria', '/branding/logo.png', true, 8)
+    ('Repuestos', 'Para todo lo mecánico y de mantenimiento.', '/branding/speedy-logo-final.png', true, 1),
+    ('Accesorios', 'Cosas extra para la moto o el conductor.', '/branding/speedy-logo-final.png', true, 2),
+    ('Cascos e indumentaria', 'Cascos, guantes, camperas, antiparras, etc.', '/branding/speedy-logo-final.png', true, 3),
+    ('Cubiertas y cámaras', 'Cubiertas, cámaras, parches, válvulas.', '/branding/speedy-logo-final.png', true, 4),
+    ('Aceites y lubricantes', 'Aceite motor, grasa cadena, lubricantes, líquidos.', '/branding/speedy-logo-final.png', true, 5),
+    ('Transmisión', 'Kit transmisión, cadenas, coronas, piñones.', '/branding/speedy-logo-final.png', true, 6),
+    ('Frenos', 'Pastillas, cintas, discos, manijas, líquido de freno.', '/branding/speedy-logo-final.png', true, 7),
+    ('Electricidad', 'Baterías, luces, lámparas, guiños, CDI, bobinas, bujías.', '/branding/speedy-logo-final.png', true, 8),
+    ('Estética y tuning', 'Stickers, plásticos, puños, espejos, cubre rayos, luces LED.', '/branding/speedy-logo-final.png', true, 9)
 ) AS seed(name, description, image_url, activo, orden)
 ON CONFLICT (name) DO UPDATE
 SET
