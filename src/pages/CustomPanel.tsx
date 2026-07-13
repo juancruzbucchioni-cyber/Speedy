@@ -1,6 +1,6 @@
 ﻿import { FormEvent, useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Edit, RefreshCw, Save, Trash2 } from 'lucide-react';
+import { CheckCircle, Download, Edit, RefreshCw, Save, Search, Trash2 } from 'lucide-react';
 import { isSupabaseConfigured, supabase } from '../lib/supabase';
 import { useAuthStore } from '../store/authStore';
 import { Category, Product, ProductImage, Testimonial } from '../types/supabase';
@@ -59,6 +59,8 @@ type AdminDebtor = {
   product_name: string;
   amount_due: number;
   due_date?: string | null;
+  paid_at?: string | null;
+  status?: string | null;
   created_at: string;
 };
 
@@ -219,6 +221,7 @@ export default function CustomPanel() {
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [bulkText, setBulkText] = useState('');
+  const [productSearch, setProductSearch] = useState('');
   const [message, setMessage] = useState('');
 
   const isAdmin = Boolean(profile?.is_admin);
@@ -236,6 +239,25 @@ export default function CustomPanel() {
       return a.name.localeCompare(b.name, 'es', { sensitivity: 'base' });
     });
   }, [products]);
+
+  const filteredProducts = useMemo(() => {
+    const search = normalizeMatch(productSearch);
+    if (!search) return sortedProducts;
+
+    return sortedProducts.filter((product) =>
+      normalizeMatch(`${product.name} ${product.category} ${product.description || ''}`).includes(search)
+    );
+  }, [productSearch, sortedProducts]);
+
+  const pendingDebtors = useMemo(
+    () => debtors.filter((debtor) => debtor.status !== 'paid' && !debtor.paid_at),
+    [debtors]
+  );
+
+  const paidDebtors = useMemo(
+    () => debtors.filter((debtor) => debtor.status === 'paid' || debtor.paid_at),
+    [debtors]
+  );
 
   const sortedCategories = useMemo(() => {
     return [...categories].sort((a, b) => {
@@ -586,6 +608,8 @@ export default function CustomPanel() {
       phone: debtorForm.phone.trim() || null,
       dni: debtorForm.dni.trim() || null,
       due_date: debtorForm.due_date || null,
+      status: 'pending',
+      paid_at: null,
     };
     const request = debtorForm.id
       ? supabase.from('debtors').update(payload).eq('id', debtorForm.id)
@@ -615,6 +639,52 @@ export default function CustomPanel() {
     const { error } = await supabase.from('debtors').delete().eq('id', debtorId);
     setMessage(error ? `No se pudo borrar: ${error.message}` : 'Deudor eliminado.');
     await loadData();
+  };
+
+  const markDebtorAsPaid = async (debtorId: string) => {
+    const { error } = await supabase
+      .from('debtors')
+      .update({ status: 'paid', paid_at: new Date().toISOString() })
+      .eq('id', debtorId);
+
+    setMessage(error ? `No se pudo marcar como pagado: ${error.message}` : 'Deudor marcado como pagado.');
+    await loadData();
+  };
+
+  const exportDebtorsCsv = () => {
+    const rows = debtors.map((debtor) => ({
+      estado: debtor.status === 'paid' || debtor.paid_at ? 'Pagado' : 'Pendiente',
+      nombre: debtor.debtor_name,
+      producto: debtor.product_name,
+      debe: debtor.amount_due,
+      celular: debtor.phone || '',
+      dni: debtor.dni || '',
+      fecha_pago_prometida: debtor.due_date || '',
+      cargado: new Date(debtor.created_at).toLocaleDateString('es-AR'),
+      pagado: debtor.paid_at ? new Date(debtor.paid_at).toLocaleDateString('es-AR') : '',
+    }));
+
+    const headers = Object.keys(rows[0] || {
+      estado: '',
+      nombre: '',
+      producto: '',
+      debe: '',
+      celular: '',
+      dni: '',
+      fecha_pago_prometida: '',
+      cargado: '',
+      pagado: '',
+    });
+
+    const escapeCell = (value: unknown) => `"${String(value ?? '').replace(/"/g, '""')}"`;
+    const csv = [headers.join(','), ...rows.map((row) => headers.map((header) => escapeCell(row[header as keyof typeof row])).join(','))].join('\n');
+    const blob = new Blob([`\uFEFF${csv}`], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `deudores-speedy-${new Date().toISOString().slice(0, 10)}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
   };
 
   if (loading) {
@@ -667,7 +737,7 @@ export default function CustomPanel() {
 
       <div className="grid gap-4 md:grid-cols-4">
         <div className={panelClass}><p className="text-gray-400">Productos</p><p className="text-3xl font-black text-white">{products.length}</p></div>
-        <div className={panelClass}><p className="text-gray-400">Deudores</p><p className="text-3xl font-black text-white">{debtors.length}</p></div>
+        <div className={panelClass}><p className="text-gray-400">Deudores</p><p className="text-3xl font-black text-white">{pendingDebtors.length}</p></div>
         <div className={panelClass}><p className="text-gray-400">Stock total</p><p className="text-3xl font-black text-white">{stats.totalStock}</p></div>
       </div>
 
@@ -724,6 +794,19 @@ export default function CustomPanel() {
 
           <div className="space-y-6">
             <div className={`${panelClass} space-y-3`}>
+              <div className="relative">
+                <input
+                  type="text"
+                  value={productSearch}
+                  onChange={(event) => setProductSearch(event.target.value)}
+                  placeholder="Buscar producto para editar"
+                  className={`${fieldClass} pr-11`}
+                />
+                <Search className="absolute right-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
+              </div>
+            </div>
+
+            <div className={`${panelClass} space-y-3`}>
               <div>
                 <h2 className="text-xl font-bold text-white">Actualizacion rapida por texto</h2>
                 <p className="mt-1 text-sm text-gray-300">
@@ -756,7 +839,7 @@ export default function CustomPanel() {
             <div className={`${panelClass} overflow-x-auto`}>
               <table className="w-full min-w-[760px] text-left text-sm">
                 <thead className="text-white"><tr><th className="p-2">Producto</th><th className="p-2">Categoria</th><th className="p-2">Precio</th><th className="p-2">Stock</th><th className="p-2">Acciones</th></tr></thead>
-                <tbody>{sortedProducts.map((product) => (
+                <tbody>{filteredProducts.map((product) => (
                   <tr key={product.id} className="border-t border-white/10 text-gray-200">
                     <td className="p-2">{product.name}</td><td className="p-2">{product.category}</td><td className="p-2 text-white">{product.price > 0 ? formatARS(Math.round(product.price)) : 'Consultar precio'}</td><td className="p-2">{product.stock}</td>
                     <td className="flex gap-2 p-2"><button onClick={() => editProduct(product)} className="rounded bg-white/10 p-2"><Edit className="h-4 w-4" /></button><button onClick={() => deleteProduct(product.id)} className="rounded bg-red-500/20 p-2 text-red-300"><Trash2 className="h-4 w-4" /></button></td>
@@ -884,12 +967,19 @@ export default function CustomPanel() {
             </div>
           </form>
           <div className={`${panelClass} space-y-2`}>
-            {debtors.length === 0 ? (
+            <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+              <h2 className="text-xl font-bold text-white">Deudores pendientes</h2>
+              <button type="button" onClick={exportDebtorsCsv} className="inline-flex items-center gap-2 rounded-md border border-white/20 px-4 py-2 text-sm font-bold text-white">
+                <Download className="h-4 w-4" />
+                Exportar CSV
+              </button>
+            </div>
+            {pendingDebtors.length === 0 ? (
               <div className="rounded-md border border-white/10 bg-white/5 p-3 text-gray-300">
-                Todavia no hay deudores cargados.
+                No hay deudores pendientes.
               </div>
             ) : null}
-            {debtors.map((debtor) => (
+            {pendingDebtors.map((debtor) => (
               <div key={debtor.id} className="rounded-md border border-white/10 bg-white/5 p-4 text-gray-200">
                 <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
                   <div className="min-w-0">
@@ -905,12 +995,34 @@ export default function CustomPanel() {
                   </div>
                 </div>
                 <div className="mt-3 flex items-center gap-2">
+                  <button onClick={() => markDebtorAsPaid(debtor.id)} className="rounded bg-green-500/20 p-2 text-green-300" title="Marcar como pagado"><CheckCircle className="h-4 w-4" /></button>
                   <button onClick={() => editDebtor(debtor)} className="rounded bg-white/10 p-2"><Edit className="h-4 w-4" /></button>
                   <button onClick={() => deleteDebtor(debtor.id)} className="rounded bg-red-500/20 p-2 text-red-300"><Trash2 className="h-4 w-4" /></button>
                   <p className="ml-auto text-xs text-gray-500">{new Date(debtor.created_at).toLocaleDateString('es-AR')}</p>
                 </div>
               </div>
             ))}
+            {paidDebtors.length > 0 ? (
+              <div className="mt-6 border-t border-white/10 pt-4">
+                <h2 className="mb-3 text-xl font-bold text-white">Historial pagado</h2>
+                <div className="space-y-2">
+                  {paidDebtors.map((debtor) => (
+                    <div key={debtor.id} className="rounded-md border border-green-500/20 bg-green-500/10 p-3 text-sm text-gray-200">
+                      <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+                        <div>
+                          <p className="font-bold text-white">{debtor.debtor_name}</p>
+                          <p className="text-gray-300">{debtor.product_name}</p>
+                        </div>
+                        <div className="text-left md:text-right">
+                          <p className="font-black text-green-200">{formatARS(Math.round(debtor.amount_due || 0))}</p>
+                          <p className="text-xs text-gray-400">{debtor.paid_at ? new Date(debtor.paid_at).toLocaleDateString('es-AR') : 'Pagado'}</p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : null}
           </div>
         </div>
       ) : null}

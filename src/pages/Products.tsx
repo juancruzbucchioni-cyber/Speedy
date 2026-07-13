@@ -9,11 +9,30 @@ import { Product } from '../types/supabase';
 import { Filter } from 'lucide-react';
 import { formatARS } from '../lib/currency';
 
+const motoModels = [
+  { label: '110cc', keywords: ['110cc', '110'] },
+  { label: 'CG / Titan / S2', keywords: ['cg', 'titan', 's2'] },
+  { label: 'Tornado / XR', keywords: ['tornado', 'xr'] },
+  { label: 'Skua', keywords: ['skua'] },
+  { label: 'Rouser', keywords: ['rouser'] },
+  { label: 'Twister', keywords: ['twister'] },
+  { label: 'Wave / Biz', keywords: ['wave', 'biz'] },
+  { label: 'Motomel / Corven / Zanella', keywords: ['motomel', 'corven', 'zanella'] },
+];
+
+function normalizeText(value: string) {
+  return value
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase();
+}
+
 export default function ProductosPage() {
   const [products, setProductos] = useState<Product[]>([]);
   const [categories, setCategorias] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<string>('');
+  const [selectedModel, setSelectedModel] = useState<string>('');
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 1000]);
   const [maxPrice, setMaxPrice] = useState<number>(1000);
   const [showFiltros, setShowFiltros] = useState(false);
@@ -26,12 +45,19 @@ export default function ProductosPage() {
   const searchParams = new URLSearchParams(location.search);
   const searchQuery = searchParams.get('search') || '';
   const categoryParam = searchParams.get('category') || '';
+  const modelParam = searchParams.get('model') || '';
 
   useEffect(() => {
     if (categoryParam && categoryParam !== selectedCategory) {
       setSelectedCategory(categoryParam);
     }
-  }, [categoryParam]);
+  }, [categoryParam, selectedCategory]);
+
+  useEffect(() => {
+    if (modelParam && modelParam !== selectedModel) {
+      setSelectedModel(modelParam);
+    }
+  }, [modelParam, selectedModel]);
 
   const fetchProductos = async () => {
     if (!isSupabaseConfigured) {
@@ -146,14 +172,23 @@ export default function ProductosPage() {
 
   const resetFiltros = () => {
     setSelectedCategory('');
+    setSelectedModel('');
     setPriceRange([0, maxPrice]);
     setSortBy('');
   };
 
-  const visibleProducts = useMemo(
-    () => [...products].sort((a, b) => a.name.localeCompare(b.name, 'es', { sensitivity: 'base' })),
-    [products]
-  );
+  const visibleProducts = useMemo(() => {
+    const selectedModelConfig = motoModels.find((model) => model.label === selectedModel);
+
+    return [...products]
+      .filter((product) => {
+        if (!selectedModelConfig) return true;
+
+        const searchableText = normalizeText(`${product.name} ${product.category} ${product.description || ''}`);
+        return selectedModelConfig.keywords.some((keyword) => searchableText.includes(normalizeText(keyword)));
+      })
+      .sort((a, b) => a.name.localeCompare(b.name, 'es', { sensitivity: 'base' }));
+  }, [products, selectedModel]);
 
   const handleQuickView = (e: React.MouseEvent, product: Product) => {
     e.preventDefault();
@@ -246,6 +281,43 @@ export default function ProductosPage() {
               </div>
             </div>
             
+            {/* Modelo de moto */}
+            <div className="mb-6">
+              <h3 className="font-brand text-lg font-medium text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.35)] mb-3">
+                Modelo de moto
+              </h3>
+              <div className="space-y-2">
+                <div className="flex items-center">
+                  <input
+                    type="radio"
+                    id="all-models"
+                    name="model"
+                    checked={selectedModel === ''}
+                    onChange={() => setSelectedModel('')}
+                    className="h-4 w-4 text-primary accent-primary"
+                  />
+                  <label htmlFor="all-models" className="font-brand ml-2 text-gray-200">
+                    Todos los modelos
+                  </label>
+                </div>
+                {motoModels.map((model) => (
+                  <div key={model.label} className="flex items-center">
+                    <input
+                      type="radio"
+                      id={`model-${model.label}`}
+                      name="model"
+                      checked={selectedModel === model.label}
+                      onChange={() => setSelectedModel(model.label)}
+                      className="h-4 w-4 text-primary accent-primary"
+                    />
+                    <label htmlFor={`model-${model.label}`} className="font-brand ml-2 text-gray-200">
+                      {model.label}
+                    </label>
+                  </div>
+                ))}
+              </div>
+            </div>
+
             {/* Rango de precio */}
             <div className="mb-6">
               <h3 className="font-brand text-lg font-medium text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.35)] mb-3">
