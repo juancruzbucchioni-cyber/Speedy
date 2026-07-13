@@ -1,5 +1,5 @@
 ﻿import { useEffect } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import WhatsAppFloat from './components/WhatsAppFloat';
@@ -19,8 +19,6 @@ import About from './pages/About';
 import FAQ from './pages/FAQ';
 import Contact from './pages/Contact';
 import Sitemap from './pages/Sitemap';
-import Categories from './pages/Categories';
-import Profile from './pages/Profile';
 import CustomPanel from './pages/CustomPanel';
 import { isSupabaseConfigured, supabase } from './lib/supabase';
 import './styles/animations.css';
@@ -79,8 +77,8 @@ function App() {
           <Route path="/faq" element={<FAQ />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/sitemap" element={<Sitemap />} />
-          <Route path="/categories" element={<Categories />} />
-          <Route path="/profile" element={<Profile />} />
+          <Route path="/categories" element={<Navigate to="/products" replace />} />
+          <Route path="/profile" element={<Navigate to="/" replace />} />
           <Route path="/admin-speedy" element={<CustomPanel />} />
         </Routes>
       </main>
@@ -94,4 +92,3 @@ function App() {
 }
 
 export default App;
-

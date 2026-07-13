@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+﻿import { Link } from 'react-router-dom';
 import { useEffect, useMemo, useState } from 'react';
 import FeaturedProducts from '../components/FeaturedProducts';
 import { isSupabaseConfigured, supabase } from '../lib/supabase';
@@ -100,12 +100,16 @@ export default function Home() {
       group.set(product.category, list);
     });
 
-    const orderedCategories = allCategories.length > 0 ? allCategories : Array.from(group.keys());
+    const orderedCategories = allCategories.length > 0
+      ? allCategories
+      : Array.from(group.keys());
 
     return orderedCategories
       .map((category) => ({
         category,
-        products: [...(group.get(category) || [])].sort((a, b) => a.name.localeCompare(b.name, 'es', { sensitivity: 'base' })),
+        products: [...(group.get(category) || [])].sort((a, b) =>
+          a.name.localeCompare(b.name, 'es', { sensitivity: 'base' })
+        ),
       }))
       .filter((block) => block.products.length > 0);
   }, [allProducts, allCategories]);
@@ -116,13 +120,19 @@ export default function Home() {
     <section className="mx-auto w-full max-w-7xl px-4 py-6">
       <div className="relative overflow-hidden rounded-md border border-red-900/70 bg-black shadow-[0_0_36px_rgba(127,29,29,0.24)]">
         <div className="p-4 md:p-6">
+          <div className="mb-4 rounded-2xl border border-red-600/80 bg-gradient-to-r from-red-950 via-red-700 to-red-600 px-4 py-3 text-center shadow-[0_0_28px_rgba(220,38,38,0.35)] md:px-6 md:py-4">
+            <p className="text-lg font-black uppercase tracking-[0.28em] text-white md:text-2xl">
+              Envios a todo el pais
+            </p>
+          </div>
+
           <Link
             to="/products"
             className="block overflow-hidden rounded-3xl border border-red-900/70 bg-zinc-950"
             aria-label="Ver productos Speedy Repuestos"
           >
             <img
-              src="/branding/speedy-logo.svg"
+              src="/branding/speedy-logo-final.png"
               alt="Speedy Repuestos para motos"
               className="h-[260px] w-full object-contain bg-black p-4 md:h-[420px] lg:h-[520px]"
             />
@@ -152,7 +162,7 @@ export default function Home() {
 
       <div className="mt-16 w-full">
         <h2 className="font-brand mb-8 text-3xl font-bold text-white">Todas las categorias</h2>
-        <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {(categoriesWithProducts.length > 0
             ? categoriesWithProducts
             : ['Accesorios', 'Escapes', 'Plasticos', 'Transmision', 'Electronica', 'Frenos', 'Iluminacion', 'Indumentaria']
@@ -174,9 +184,13 @@ export default function Home() {
           {groupedProducts.map((block) => (
             <div key={block.category}>
               <h3 className="font-brand mb-4 text-xl text-white md:text-2xl">{block.category}</h3>
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 {block.products.map((product) => (
-                  <Link key={product.id} to={`/products/${product.id}`} className="block h-full">
+                  <Link
+                    key={product.id}
+                    to={`/products/${product.id}`}
+                    className="block h-full"
+                  >
                     <ProductCard product={product} onAddToCart={addItem} />
                   </Link>
                 ))}
@@ -189,10 +203,10 @@ export default function Home() {
       <div className="mt-16 w-full">
         <div className="mx-auto max-w-3xl rounded-xl border border-white/10 bg-zinc-950 p-6 text-center shadow-sm md:p-8">
           <p className="text-sm font-black uppercase tracking-[0.24em] text-red-300">Envios a todo el pais</p>
-          <p className="mt-3 text-2xl font-black tracking-wide text-white">03534099785</p>
+          <p className="mt-3 text-2xl font-black tracking-wide text-white">Contacto por WhatsApp</p>
           <p className="mt-3 text-gray-200">@speedyrepuestos</p>
           <p className="mt-2 text-gray-300">Seguinos para novedades, ingresos y promos.</p>
-          <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
+          <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
             <a
               href="https://www.instagram.com/speedyrepuestos/"
               target="_blank"

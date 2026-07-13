@@ -40,7 +40,7 @@ const QuickView = memo(function QuickView({ product, onClose }: QuickViewProps) 
 
   const handleAddToCart = () => {
     if (isOnRequest) {
-      const message = `Hola Kazuty Parts, quiero consultar por ${product.name}. Modelo de moto: _____. Color: ${selectedColor || '_____'}.`;
+      const message = `Hola Speedy Repuestos, quiero consultar por ${product.name}. Modelo de moto: _____. Color: ${selectedColor || '_____'}.`;
       window.open(`https://wa.me/5493534128474?text=${encodeURIComponent(message)}`, '_blank', 'noopener,noreferrer');
       onClose();
       return;
@@ -188,5 +188,4 @@ const QuickView = memo(function QuickView({ product, onClose }: QuickViewProps) 
 });
 
 export default QuickView;
-
 

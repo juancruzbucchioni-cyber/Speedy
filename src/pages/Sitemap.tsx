@@ -9,7 +9,6 @@ export default function Sitemap() {
       links: [
         { name: 'Inicio', path: '/' },
         { name: 'Productos', path: '/products' },
-        { name: 'Categorias', path: '/categories' },
         { name: 'Nosotros', path: '/about' },
         { name: 'Contacto', path: '/contact' },
         { name: 'FAQ', path: '/faq' }
@@ -30,7 +29,6 @@ export default function Sitemap() {
       icon: <User className="h-5 w-5 text-primary" />,
       links: [
         { name: 'Iniciar sesion / Registro', path: '/auth' },
-        { name: 'Mi perfil', path: '/profile' },
         { name: 'Historial de pedidos', path: '/orders' },
         { name: 'Carrito', path: '/cart' }
       ]
@@ -87,7 +85,6 @@ export default function Sitemap() {
           <div className="flex items-center mb-4"><ShoppingCart className="h-6 w-6 text-primary mr-2" /><h2 className="text-xl font-semibold text-gray-900 dark:text-white">Tienda</h2></div>
           <ul className="space-y-2">
             <li><Link to="/products" className="text-gray-600 dark:text-gray-300 hover:text-primary transition-colors">Ver todos los productos</Link></li>
-            <li><Link to="/categories" className="text-gray-600 dark:text-gray-300 hover:text-primary transition-colors">Categorias de productos</Link></li>
             <li><Link to="/cart" className="text-gray-600 dark:text-gray-300 hover:text-primary transition-colors">Carrito</Link></li>
           </ul>
         </div>
@@ -110,4 +107,3 @@ export default function Sitemap() {
     </section>
   );
 }
-

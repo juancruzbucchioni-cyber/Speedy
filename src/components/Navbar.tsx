@@ -44,13 +44,23 @@ export default function Navbar() {
       <div
         className={`mx-auto flex w-full max-w-7xl flex-col gap-3 px-4 transition-all duration-300 lg:flex-row lg:items-center lg:justify-between ${isScrolled ? 'py-2' : 'py-3'}`}
       >
-        <Link to="/" className="flex items-center" aria-label="Volver al inicio de Speedy Repuestos">
-          <img
-            src="/branding/speedy-logo.svg"
-            alt="Speedy Repuestos"
-            className={`w-auto object-contain transition-all duration-300 ${isScrolled ? 'h-12 md:h-14' : 'h-14 md:h-16'}`}
-          />
-        </Link>
+        {isAdminPanel ? (
+          <div className="flex items-center" aria-label="Logo de Speedy Repuestos">
+            <img
+              src="/branding/speedy-logo-final.png"
+              alt="Speedy Repuestos"
+              className={`w-auto object-contain transition-all duration-300 ${isScrolled ? 'h-12 md:h-14' : 'h-14 md:h-16'}`}
+            />
+          </div>
+        ) : (
+          <Link to="/" className="flex items-center" aria-label="Volver al inicio de Speedy Repuestos">
+            <img
+              src="/branding/speedy-logo-final.png"
+              alt="Speedy Repuestos"
+              className={`w-auto object-contain transition-all duration-300 ${isScrolled ? 'h-12 md:h-14' : 'h-14 md:h-16'}`}
+            />
+          </Link>
+        )}
 
         {!isAdminPanel && (
           <div className="order-3 flex flex-wrap items-center justify-center rounded-full border border-red-800/80 bg-zinc-950 px-5 py-2 text-xs font-bold text-white shadow-[0_0_18px_rgba(127,29,29,0.22)] md:order-none md:px-7 md:text-sm">
@@ -58,20 +68,8 @@ export default function Navbar() {
               Inicio
             </Link>
             <span className="text-red-900/80">|</span>
-            <Link to="/offers" className="min-w-16 px-2 text-center transition-colors hover:text-red-400">
-              Ofertas
-            </Link>
-            <span className="text-red-900/80">|</span>
             <Link to="/products" className="min-w-20 px-2 text-center transition-colors hover:text-red-400">
               Productos
-            </Link>
-            <span className="text-red-900/80">|</span>
-            <Link to="/products" className="min-w-20 px-2 text-center transition-colors hover:text-red-400">
-              Tendencia
-            </Link>
-            <span className="text-red-900/80">|</span>
-            <Link to="/categories" className="min-w-20 px-2 text-center transition-colors hover:text-red-400">
-              Categorias
             </Link>
             <span className="text-red-900/80">|</span>
             <a
@@ -89,7 +87,7 @@ export default function Navbar() {
               rel="noreferrer"
               className="min-w-20 px-2 text-center transition-colors hover:text-red-400"
             >
-              03534099785
+              Contacto
             </a>
           </div>
         )}
@@ -125,13 +123,6 @@ export default function Navbar() {
               </button>
               {isMenuOpen && (
                 <div className="absolute right-0 mt-3 w-48 rounded-md border border-white/15 bg-black py-1 text-white shadow-lg">
-                  <Link
-                    to="/profile"
-                    className="block px-4 py-2 text-sm hover:bg-red-950/50"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    Perfil
-                  </Link>
                   <button
                     onClick={handleSignOut}
                     className="flex w-full items-center px-4 py-2 text-left text-sm hover:bg-red-950/50"

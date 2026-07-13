@@ -150,29 +150,10 @@ export default function ProductosPage() {
     setSortBy('');
   };
 
-  const groupedProducts = useMemo(() => {
-    const group = new Map<string, Product[]>();
-
-    products.forEach((product) => {
-      const list = group.get(product.category) || [];
-      list.push(product);
-      group.set(product.category, list);
-    });
-
-    const orderedCategories = [
-      ...categories.filter((category) => group.has(category)),
-      ...Array.from(group.keys())
-        .filter((category) => !categories.includes(category))
-        .sort((a, b) => a.localeCompare(b, 'es', { sensitivity: 'base' })),
-    ];
-
-    return orderedCategories.map((category) => ({
-      category,
-      products: [...(group.get(category) || [])].sort((a, b) =>
-        a.name.localeCompare(b.name, 'es', { sensitivity: 'base' })
-      ),
-    }));
-  }, [products, categories]);
+  const visibleProducts = useMemo(
+    () => [...products].sort((a, b) => a.name.localeCompare(b.name, 'es', { sensitivity: 'base' })),
+    [products]
+  );
 
   const handleQuickView = (e: React.MouseEvent, product: Product) => {
     e.preventDefault();
@@ -190,7 +171,7 @@ export default function ProductosPage() {
           </h1>
         </div>
         <p className="text-gray-300 text-sm md:text-base">
-          Selecciona tu repuesto ideal con el estilo de <span className="text-primary font-bold">Kazuty Parts</span>.
+          Selecciona tu repuesto ideal con el estilo de <span className="text-primary font-bold">Speedy Repuestos</span>.
         </p>
       </div>
       <div className="flex justify-between items-center mb-6">
@@ -316,28 +297,19 @@ export default function ProductosPage() {
             <div className="flex justify-center items-center h-64">
               <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
             </div>
-          ) : groupedProducts.length > 0 ? (
-            <div className="space-y-10">
-              {groupedProducts.map((block) => (
-                <section key={block.category}>
-                  <h3 className="font-brand mb-4 text-2xl font-bold text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.35)]">
-                    {block.category}
-                  </h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {block.products.map((product) => (
-                      <div key={product.id} className="transform-gpu">
-                        <ProductCard
-                          product={product}
-                          onAddToCart={addItem}
-                          onQuickView={(product) => {
-                            setQuickViewProduct(product);
-                            setIsQuickViewOpen(true);
-                          }}
-                        />
-                      </div>
-                    ))}
-                  </div>
-                </section>
+          ) : visibleProducts.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {visibleProducts.map((product) => (
+                <div key={product.id} className="transform-gpu">
+                  <ProductCard
+                    product={product}
+                    onAddToCart={addItem}
+                    onQuickView={(product) => {
+                      setQuickViewProduct(product);
+                      setIsQuickViewOpen(true);
+                    }}
+                  />
+                </div>
               ))}
             </div>
           ) : (
@@ -358,5 +330,3 @@ export default function ProductosPage() {
     </div>
   );
 }
-
-

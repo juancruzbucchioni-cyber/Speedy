@@ -30,7 +30,7 @@ const ProductCard = memo(function ProductCard({
     event.stopPropagation();
 
     if (isOnRequest) {
-      const message = `Hola Kazuty Parts, quiero consultar por ${product.name}. Modelo de moto: _____. Color: _____.`;
+      const message = `Hola Speedy Repuestos, quiero consultar por ${product.name}. Modelo de moto: _____. Color: _____.`;
       window.open(`https://wa.me/5493534128474?text=${encodeURIComponent(message)}`, '_blank', 'noopener,noreferrer');
       return;
     }

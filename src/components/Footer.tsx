@@ -33,7 +33,7 @@ export default function Footer() {
             <h3 className="font-brand mb-4 text-lg font-semibold text-white">Contacto</h3>
             <ul className="space-y-3 text-gray-200">
               <li className="flex items-start"><MapPin className="mr-2 mt-0.5 h-5 w-5 text-white" /><span>Envios a todo el pais</span></li>
-              <li className="flex items-center"><Phone className="mr-2 h-5 w-5 text-white" /><a href={WHATSAPP_URL} target="_blank" rel="noreferrer" className="hover:text-white hover:underline">03534099785</a></li>
+              <li className="flex items-center"><Phone className="mr-2 h-5 w-5 text-white" /><a href={WHATSAPP_URL} target="_blank" rel="noreferrer" className="hover:text-white hover:underline">Contacto por WhatsApp</a></li>
               <li className="flex items-center"><Instagram className="mr-2 h-5 w-5 text-white" /><a href={INSTAGRAM_URL} target="_blank" rel="noreferrer" className="hover:text-white hover:underline">@speedyrepuestos</a></li>
             </ul>
           </div>

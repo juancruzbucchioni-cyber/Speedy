@@ -123,7 +123,7 @@ export default function ProductDetail() {
   const handleAddToCart = () => {
     if (!product) return;
     if (product.price <= 0) {
-      const message = `Hola Kazuty Parts, quiero consultar por ${product.name}. Modelo de moto: _____. Color: ${selectedColor || '_____'}.`;
+      const message = `Hola Speedy Repuestos, quiero consultar por ${product.name}. Modelo de moto: _____. Color: ${selectedColor || '_____'}.`;
       window.open(`https://wa.me/5493534128474?text=${encodeURIComponent(message)}`, '_blank', 'noopener,noreferrer');
       return;
     }
@@ -365,5 +365,4 @@ export default function ProductDetail() {
     </div>
   );
 }
-
 

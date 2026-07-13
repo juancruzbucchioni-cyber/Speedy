@@ -75,7 +75,7 @@ export default function Cart() {
       });
 
       const message =
-        `Hola Kazuty Parts, ya hice el pedido ${orderId} desde la web.\n\n` +
+        `Hola Speedy Repuestos, ya hice el pedido ${orderId} desde la web.\n\n` +
         `${lines.join('\n')}\n\n` +
         `Forma de pago: ${paymentLabel(paymentMethod)}\n` +
         `Total: ${formatARS(Math.round(total))}\n\n` +
@@ -95,7 +95,7 @@ export default function Cart() {
     });
 
     const message =
-      `Hola Kazuty Parts, quiero comprar estos productos:\n\n` +
+      `Hola Speedy Repuestos, quiero comprar estos productos:\n\n` +
       `${lines.join('\n')}\n\n` +
       `Forma de pago: ${paymentLabel(paymentMethod)}\n` +
       `Total: ${formatARS(Math.round(total))}\n\n` +
