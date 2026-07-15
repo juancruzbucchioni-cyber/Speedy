@@ -1,9 +1,10 @@
-﻿import { Eye, ShoppingCart } from 'lucide-react';
-import { Product } from '../types/supabase';
-import { useEffect, memo, useState } from 'react';
+import { ShoppingCart } from 'lucide-react';
+import { memo, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { formatProductPrice } from '../lib/currency';
 import { useCartStore } from '../store/cartStore';
 import { CartState } from '../types/cart';
-import { formatProductPrice } from '../lib/currency';
+import { Product } from '../types/supabase';
 
 interface ProductCardProps {
   product: Product;
@@ -14,10 +15,10 @@ interface ProductCardProps {
 const ProductCard = memo(function ProductCard({
   product,
   onAddToCart,
-  onQuickView,
 }: ProductCardProps) {
   const cartItems = useCartStore((state: CartState) => state.items);
   const [isInCart, setIsInCart] = useState(false);
+  const navigate = useNavigate();
   const isOnRequest = product.price <= 0;
 
   useEffect(() => {
@@ -29,12 +30,6 @@ const ProductCard = memo(function ProductCard({
     event.preventDefault();
     event.stopPropagation();
 
-    if (isOnRequest) {
-      const message = `Hola Speedy Repuestos, quiero consultar por ${product.name}. Modelo de moto: _____. Color: _____.`;
-      window.open(`https://wa.me/5403534099785?text=${encodeURIComponent(message)}`, '_blank', 'noopener,noreferrer');
-      return;
-    }
-
     const existingItem = cartItems.find((item: { product_id: string }) => item.product_id === product.id);
     if (existingItem) {
       useCartStore.getState().updateQuantity(existingItem.id, existingItem.quantity + 1);
@@ -44,16 +39,15 @@ const ProductCard = memo(function ProductCard({
     onAddToCart(product);
   };
 
-  const handleQuickView = (event: React.MouseEvent) => {
-    if (!onQuickView) return;
+  const openProductDetail = (event: React.MouseEvent) => {
     event.preventDefault();
     event.stopPropagation();
-    onQuickView(product);
+    navigate(`/products/${product.id}`);
   };
 
   return (
     <div
-      onClick={handleQuickView}
+      onClick={openProductDetail}
       className="product-sale-card group flex h-full cursor-pointer flex-col will-change-transform"
     >
       <div className="relative overflow-hidden rounded-t-[28px] bg-zinc-900">
@@ -93,30 +87,22 @@ const ProductCard = memo(function ProductCard({
             {formatProductPrice(Math.round(product.price))}
           </p>
           <p className="mt-2 text-sm font-black uppercase leading-tight text-red-300">
-            {isOnRequest ? 'Producto por encargo' : 'Precio especial por transferencia'}
+            {isOnRequest ? 'Precio a consultar' : 'Precio especial por transferencia'}
           </p>
         </div>
-        <div className="mt-auto grid grid-cols-2 gap-3 pt-5">
+        <div className="mt-auto pt-5">
           <button
             onClick={handleAddToCart}
-            disabled={!isOnRequest && product.stock === 0}
-            className={`flex items-center justify-center gap-2 rounded-full py-3 text-sm font-black uppercase transition-all duration-300 active:scale-95 ${
-              product.stock > 0 || isOnRequest
+            disabled={product.stock === 0}
+            className={`flex w-full items-center justify-center gap-2 rounded-full py-3 text-sm font-black uppercase transition-all duration-300 active:scale-95 ${
+              product.stock > 0
                 ? 'bg-red-600 text-white hover:bg-red-700'
                 : 'cursor-not-allowed bg-gray-500/60 text-gray-300'
             }`}
-            aria-label={isOnRequest ? 'Consultar por WhatsApp' : product.stock > 0 ? (isInCart ? 'Actualizar carrito' : 'Agregar al carrito') : 'Sin stock'}
+            aria-label={product.stock > 0 ? (isInCart ? 'Actualizar carrito' : 'Agregar al carrito') : 'Sin stock'}
           >
             <ShoppingCart className="h-5 w-5" />
-            <span>{isOnRequest ? 'Consultar' : product.stock > 0 ? (isInCart ? 'Listo' : 'Comprar') : 'Sin stock'}</span>
-          </button>
-          <button
-            onClick={handleQuickView}
-            className="flex items-center justify-center gap-2 rounded-full border border-red-700/80 py-3 text-sm font-black uppercase text-white transition-all duration-300 hover:bg-red-950 hover:text-red-100"
-            aria-label="Ver producto"
-          >
-            <Eye className="h-4 w-4" />
-            Ver
+            <span>{product.stock > 0 ? (isInCart ? 'Listo' : 'Agregar al carrito') : 'Sin stock'}</span>
           </button>
         </div>
       </div>
