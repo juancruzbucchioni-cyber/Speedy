@@ -140,26 +140,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     }
 
     try {
-      // First check if username is already taken
-      const { data: existingUsers, error: checkError } = await supabase
-        .from('profiles')
-        .select('username')
-        .eq('username', username)
-        .limit(1);
-        
-      if (checkError) {
-        console.error('Error checking username:', checkError);
-        return { error: checkError, data: null };
-      }
-      
-      if (existingUsers && existingUsers.length > 0) {
-        return { 
-          error: { message: 'Username is already taken. Please choose another one.' }, 
-          data: null 
-        };
-      }
-      
-      // If username is available, proceed with signup
+      // La disponibilidad del username la valida la constraint unica de Supabase.
+      // Asi evitamos permitir lecturas publicas de la tabla profiles.
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
@@ -180,6 +162,13 @@ export const useAuthStore = create<AuthState>((set, get) => ({
             created_at: new Date().toISOString()
           });
           
+        if (profileError?.code === '23505') {
+          return {
+            error: { message: 'Ese usuario ya existe. Elegi otro nombre.' },
+            data: null,
+          };
+        }
+
         if (profileError) {
           console.error('Error creating profile:', profileError);
         } else {
@@ -213,5 +202,4 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     }
   },
 }));
-
 

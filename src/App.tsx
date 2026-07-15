@@ -20,6 +20,7 @@ import FAQ from './pages/FAQ';
 import Contact from './pages/Contact';
 import Sitemap from './pages/Sitemap';
 import CustomPanel from './pages/CustomPanel';
+import AdminGuard from './components/AdminGuard';
 import { isSupabaseConfigured, supabase } from './lib/supabase';
 import './styles/animations.css';
 
@@ -79,7 +80,7 @@ function App() {
           <Route path="/sitemap" element={<Sitemap />} />
           <Route path="/categories" element={<Navigate to="/products" replace />} />
           <Route path="/profile" element={<Navigate to="/" replace />} />
-          <Route path="/admin-speedy" element={<CustomPanel />} />
+          <Route path="/admin-speedy" element={<AdminGuard><CustomPanel /></AdminGuard>} />
         </Routes>
       </main>
 

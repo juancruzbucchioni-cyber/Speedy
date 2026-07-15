@@ -31,7 +31,7 @@ const ProductCard = memo(function ProductCard({
 
     if (isOnRequest) {
       const message = `Hola Speedy Repuestos, quiero consultar por ${product.name}. Modelo de moto: _____. Color: _____.`;
-      window.open(`https://wa.me/5493534128474?text=${encodeURIComponent(message)}`, '_blank', 'noopener,noreferrer');
+      window.open(`https://wa.me/5403534099785?text=${encodeURIComponent(message)}`, '_blank', 'noopener,noreferrer');
       return;
     }
 

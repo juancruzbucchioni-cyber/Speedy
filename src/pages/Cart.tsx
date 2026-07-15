@@ -7,7 +7,7 @@ import { isSupabaseConfigured, supabase } from '../lib/supabase';
 
 type PaymentMethod = 'efectivo' | 'transferencia';
 
-const WHATSAPP_PHONE = '5493534128474';
+const WHATSAPP_PHONE = '5403534099785';
 
 function paymentLabel(method: PaymentMethod) {
   switch (method) {
