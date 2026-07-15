@@ -1,6 +1,6 @@
 ﻿import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ShoppingCart, Star, ArrowLeft, Info, Package, Check, X, Truck, Shield } from 'lucide-react';
+import { ShoppingCart, Star, ArrowLeft, Info, Package, X, Truck, Shield } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useCartStore } from '../store/cartStore';
 import { Product, Review, ProductImage } from '../types/supabase';
@@ -248,29 +248,6 @@ export default function ProductDetail() {
                 <span className="text-red-600 dark:text-red-400">Sin stock</span>
               )}
             </p>
-          </div>
-          
-          {/* Product Benefits */}
-          <div className="bg-black/55 border border-white/30 rounded-lg p-4 mb-6">
-            <h3 className="font-semibold text-white mb-3">Beneficios clave</h3>
-            <ul className="space-y-2">
-              <li className="flex items-center">
-                <Check className="h-5 w-5 text-green-500 mr-2 flex-shrink-0" />
-                <span className="text-gray-200">Materiales premium de alta durabilidad</span>
-              </li>
-              <li className="flex items-center">
-                <Check className="h-5 w-5 text-green-500 mr-2 flex-shrink-0" />
-                <span className="text-gray-200">Garantia del fabricante</span>
-              </li>
-              <li className="flex items-center">
-                <Check className="h-5 w-5 text-green-500 mr-2 flex-shrink-0" />
-                <span className="text-gray-200">Envio gratis segun zona y monto</span>
-              </li>
-              <li className="flex items-center">
-                <Check className="h-5 w-5 text-green-500 mr-2 flex-shrink-0" />
-                <span className="text-gray-200">Atencion post-venta personalizada</span>
-              </li>
-            </ul>
           </div>
           
           {/* Quantity Selector */}
