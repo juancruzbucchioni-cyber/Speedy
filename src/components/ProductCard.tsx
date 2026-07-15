@@ -64,11 +64,8 @@ const ProductCard = memo(function ProductCard({
           loading="lazy"
           decoding="async"
         />
-        <div className="absolute left-4 top-4 flex h-14 w-14 items-center justify-center rounded-full bg-red-700 text-center text-[11px] font-black uppercase leading-tight text-white">
-          {isOnRequest ? 'Encargo' : 'Stock'}
-        </div>
         {!isOnRequest && product.stock <= 5 && product.stock > 0 && (
-          <div className="absolute left-4 top-20 rounded-full bg-red-950 px-3 py-2 text-xs font-black uppercase text-red-100">
+          <div className="absolute left-4 top-4 rounded-full bg-red-950 px-3 py-2 text-xs font-black uppercase text-red-100">
             Quedan {product.stock}
           </div>
         )}
