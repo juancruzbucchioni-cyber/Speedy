@@ -130,24 +130,32 @@ function splitList(value: string) {
     .filter(Boolean);
 }
 
+function extractImageUrl(value: string) {
+  return value.match(/(https?:\/\/\S+|\/\S+)/i)?.[1]?.trim() || value.trim();
+}
+
 function parseProductImageInput(value: string): ProductImageInput[] {
   return value
     .split('\n')
     .map((line) => line.trim())
     .filter(Boolean)
     .map((line) => {
-      const colorMatch = line.match(/^(.+?)\s*(?:-|[|:])\s*(https?:\/\/\S+|\/\S+)/i);
+      const imageUrl = extractImageUrl(line);
+      const urlIndex = line.indexOf(imageUrl);
+      const color = urlIndex > 0
+        ? line.slice(0, urlIndex).replace(/[-|:]\s*$/, '').trim()
+        : '';
 
-      if (colorMatch) {
+      if (color) {
         return {
-          color: colorMatch[1].trim(),
-          image_url: colorMatch[2].trim(),
+          color,
+          image_url: imageUrl,
         };
       }
 
       return {
         color: null,
-        image_url: line,
+        image_url: imageUrl,
       };
     });
 }
@@ -351,7 +359,7 @@ export default function CustomPanel() {
         stock: Number(productForm.stock),
         category: productForm.category.trim(),
         motorcycle_model: productForm.motorcycle_model.trim() || null,
-        image_url: productForm.image_url.trim(),
+        image_url: extractImageUrl(productForm.image_url),
         colors: splitList(productForm.colors),
     };
 

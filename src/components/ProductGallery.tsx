@@ -17,10 +17,15 @@ function normalizeColor(value: string) {
     .trim();
 }
 
+function extractImageUrl(value: string) {
+  return value.match(/(https?:\/\/\S+|\/\S+)/i)?.[1]?.trim() || '';
+}
+
 export default function ProductGallery({ productId, mainImage, selectedColor }: ProductGalleryProps) {
+  const cleanMainImage = extractImageUrl(mainImage);
   const [images, setImages] = useState<string[]>([]);
   const [imageRows, setImageRows] = useState<ProductImage[]>([]);
-  const [currentImage, setCurrentImage] = useState<string>(mainImage);
+  const [currentImage, setCurrentImage] = useState<string>(cleanMainImage);
   const [loading, setLoading] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -37,22 +42,27 @@ export default function ProductGallery({ productId, mainImage, selectedColor }: 
 
       if (error) {
         console.error('Error fetching product images:', error);
-        setImages([mainImage]);
+        setImageRows([]);
+        setImages(cleanMainImage ? [cleanMainImage] : []);
         setCurrentIndex(0);
-        setCurrentImage(mainImage);
+        setCurrentImage(cleanMainImage);
       } else if (data && data.length > 0) {
-        const rows = data as ProductImage[];
+        const rows = (data as ProductImage[])
+          .map((image) => ({ ...image, image_url: extractImageUrl(image.image_url) }))
+          .filter((image) => image.image_url);
         const imageUrls = rows.map((img) => img.image_url);
-        const mergedImages = imageUrls.includes(mainImage) ? imageUrls : [mainImage, ...imageUrls];
+        const mergedImages = imageUrls.includes(cleanMainImage) || !cleanMainImage
+          ? imageUrls
+          : [cleanMainImage, ...imageUrls];
         setImageRows(rows);
         setImages(mergedImages);
         setCurrentIndex(0);
-        setCurrentImage(mergedImages[0]);
+        setCurrentImage(mergedImages[0] || cleanMainImage);
       } else {
         setImageRows([]);
-        setImages([mainImage]);
+        setImages(cleanMainImage ? [cleanMainImage] : []);
         setCurrentIndex(0);
-        setCurrentImage(mainImage);
+        setCurrentImage(cleanMainImage);
       }
 
       setLoading(false);
@@ -61,12 +71,13 @@ export default function ProductGallery({ productId, mainImage, selectedColor }: 
     if (productId) {
       fetchProductImages();
     } else {
-      setImages([mainImage]);
+      setImageRows([]);
+      setImages(cleanMainImage ? [cleanMainImage] : []);
       setCurrentIndex(0);
-      setCurrentImage(mainImage);
+      setCurrentImage(cleanMainImage);
       setLoading(false);
     }
-  }, [productId, mainImage]);
+  }, [productId, cleanMainImage]);
 
   useEffect(() => {
     if (!selectedColor || imageRows.length === 0) return;

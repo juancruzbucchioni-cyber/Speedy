@@ -242,7 +242,7 @@ export default function ProductDetail() {
             <p className="text-gray-200 mb-2">
               <span className="font-semibold">Disponibilidad:</span>{' '}
               {isOnRequest ? (
-                <span className="text-green-600 dark:text-green-400">Producto por encargo</span>
+                <span className="text-green-600 dark:text-green-400">Consultar disponibilidad</span>
               ) : product.stock > 0 ? (
                 <span className="text-green-600 dark:text-green-400">En stock ({product.stock} disponibles)</span>
               ) : (
