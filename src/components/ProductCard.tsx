@@ -86,9 +86,6 @@ const ProductCard = memo(function ProductCard({
           <p className="text-3xl font-black leading-none text-white">
             {formatProductPrice(Math.round(product.price))}
           </p>
-          <p className="mt-2 text-sm font-black uppercase leading-tight text-red-300">
-            {isOnRequest ? 'Precio a consultar' : 'Precio especial por transferencia'}
-          </p>
         </div>
         <div className="mt-auto pt-5">
           <button
