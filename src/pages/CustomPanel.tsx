@@ -17,6 +17,7 @@ type ProductForm = {
   image_url: string;
   colors: string;
   extra_images: string;
+  is_best_seller: boolean;
 };
 
 type CategoryForm = {
@@ -90,6 +91,7 @@ const emptyProduct: ProductForm = {
   image_url: '',
   colors: 'Negro, Blanco, Gris',
   extra_images: '',
+  is_best_seller: false,
 };
 
 const emptyDebtor: DebtorForm = {
@@ -361,6 +363,7 @@ export default function CustomPanel() {
         motorcycle_model: productForm.motorcycle_model.trim() || null,
         image_url: extractImageUrl(productForm.image_url),
         colors: splitList(productForm.colors),
+        is_best_seller: productForm.is_best_seller,
     };
 
     const request = productForm.id
@@ -489,6 +492,7 @@ export default function CustomPanel() {
       motorcycle_model: product.motorcycle_model || '',
       image_url: product.image_url || '',
       colors: (product.colors || []).join(', '),
+      is_best_seller: Boolean(product.is_best_seller),
       extra_images: (productImages[product.id] || [])
         .filter((image) => image.image_url !== product.image_url)
         .map(formatProductImageInput)
@@ -862,6 +866,15 @@ export default function CustomPanel() {
               />
             </label>
             <label className={labelClass}>Colores separados por coma<input className={fieldClass} value={productForm.colors} onChange={(e) => setProductForm({ ...productForm, colors: e.target.value })} /></label>
+            <label className={`${labelClass} flex items-center gap-3 rounded-md border border-red-800/50 bg-red-950/25 p-3`}>
+              <input
+                type="checkbox"
+                checked={productForm.is_best_seller}
+                onChange={(e) => setProductForm({ ...productForm, is_best_seller: e.target.checked })}
+                className="h-4 w-4 accent-red-600"
+              />
+              <span>Producto mas vendido</span>
+            </label>
             <label className={labelClass}>
               Subir mas imagenes
               <input type="file" accept="image/*" multiple className={fieldClass} disabled={uploading} onChange={(e) => uploadProductFiles(e.target.files, 'extra')} />
@@ -931,10 +944,10 @@ export default function CustomPanel() {
 
             <div className={`${panelClass} overflow-x-auto`}>
               <table className="w-full min-w-[760px] text-left text-sm">
-                <thead className="text-white"><tr><th className="p-2">Producto</th><th className="p-2">Categoria</th><th className="p-2">Modelo</th><th className="p-2">Precio</th><th className="p-2">Stock</th><th className="p-2">Acciones</th></tr></thead>
+                <thead className="text-white"><tr><th className="p-2">Producto</th><th className="p-2">Categoria</th><th className="p-2">Modelo</th><th className="p-2">Precio</th><th className="p-2">Stock</th><th className="p-2">Mas vendido</th><th className="p-2">Acciones</th></tr></thead>
                 <tbody>{filteredProducts.map((product) => (
                   <tr key={product.id} className="border-t border-white/10 text-gray-200">
-                    <td className="p-2">{product.name}</td><td className="p-2">{product.category}</td><td className="p-2">{product.motorcycle_model || 'Sin modelo'}</td><td className="p-2 text-white">{product.price > 0 ? formatARS(Math.round(product.price)) : 'Consultar precio'}</td><td className="p-2">{product.stock}</td>
+                    <td className="p-2">{product.name}</td><td className="p-2">{product.category}</td><td className="p-2">{product.motorcycle_model || 'Sin modelo'}</td><td className="p-2 text-white">{product.price > 0 ? formatARS(Math.round(product.price)) : 'Consultar precio'}</td><td className="p-2">{product.stock}</td><td className="p-2">{product.is_best_seller ? 'Si' : 'No'}</td>
                     <td className="flex gap-2 p-2"><button onClick={() => editProduct(product)} className="rounded bg-white/10 p-2"><Edit className="h-4 w-4" /></button><button onClick={() => deleteProduct(product.id)} className="rounded bg-red-500/20 p-2 text-red-300"><Trash2 className="h-4 w-4" /></button></td>
                   </tr>
                 ))}</tbody>

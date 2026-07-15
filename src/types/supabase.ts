@@ -7,6 +7,7 @@
   category: string;
   motorcycle_model?: string | null;
   stock: number;
+  is_best_seller?: boolean | null;
   created_at: string;
   category_id?: string;
   colors?: string[] | null;

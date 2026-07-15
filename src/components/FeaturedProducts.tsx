@@ -22,6 +22,7 @@ export default function FeaturedProductos() {
       const { data, error } = await supabase
         .from('products')
         .select('*')
+        .eq('is_best_seller', true)
         .order('created_at', { ascending: false })
         .limit(3);
 
@@ -82,4 +83,3 @@ export default function FeaturedProductos() {
     </div>
   );
 }
-
