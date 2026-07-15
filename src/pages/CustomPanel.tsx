@@ -75,6 +75,11 @@ type BulkProductRow = {
   image_url?: string;
 };
 
+type ProductImageInput = {
+  image_url: string;
+  color: string | null;
+};
+
 const emptyProduct: ProductForm = {
   name: '',
   description: '',
@@ -123,6 +128,32 @@ function splitList(value: string) {
     .split(/[\n,]/)
     .map((item) => item.trim())
     .filter(Boolean);
+}
+
+function parseProductImageInput(value: string): ProductImageInput[] {
+  return value
+    .split('\n')
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map((line) => {
+      const colorMatch = line.match(/^([^|:]+)\s*[|:]\s*(https?:\/\/\S+|\/\S+)/i);
+
+      if (colorMatch) {
+        return {
+          color: colorMatch[1].trim(),
+          image_url: colorMatch[2].trim(),
+        };
+      }
+
+      return {
+        color: null,
+        image_url: line,
+      };
+    });
+}
+
+function formatProductImageInput(image: ProductImage) {
+  return image.color ? `${image.color} | ${image.image_url}` : image.image_url;
 }
 
 function normalizeMatch(value: string) {
@@ -336,7 +367,10 @@ export default function CustomPanel() {
     }
 
     const productId = (data as Product).id;
-    const images = [payload.image_url, ...splitList(productForm.extra_images)].filter(Boolean);
+    const images: ProductImageInput[] = [
+      { image_url: payload.image_url, color: null },
+      ...parseProductImageInput(productForm.extra_images),
+    ].filter((image) => image.image_url);
 
     const { error: deleteImagesError } = await supabase.from('product_images').delete().eq('product_id', productId);
     if (deleteImagesError) {
@@ -347,9 +381,10 @@ export default function CustomPanel() {
 
     if (images.length > 0) {
       const { error: imagesError } = await supabase.from('product_images').insert(
-        images.map((imageUrl, index) => ({
+        images.map((image, index) => ({
           product_id: productId,
-          image_url: imageUrl,
+          image_url: image.image_url,
+          color: image.color,
           is_primary: index === 0,
           display_order: index + 1,
         }))
@@ -448,7 +483,7 @@ export default function CustomPanel() {
       colors: (product.colors || []).join(', '),
       extra_images: (productImages[product.id] || [])
         .filter((image) => image.image_url !== product.image_url)
-        .map((image) => image.image_url)
+        .map(formatProductImageInput)
         .join('\n'),
     });
     setActiveTab('products');
@@ -830,7 +865,7 @@ export default function CustomPanel() {
                 value={productForm.extra_images}
                 onPaste={(e) => pasteProductImage(e, 'extra')}
                 onChange={(e) => setProductForm({ ...productForm, extra_images: e.target.value })}
-                placeholder="Pega URLs o imagenes copiadas con Ctrl + V"
+                placeholder="Pega URLs o imagenes. Para color: Rojo | https://..."
               />
             </label>
             <div className="flex gap-2">

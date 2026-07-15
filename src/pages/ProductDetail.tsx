@@ -185,6 +185,7 @@ export default function ProductDetail() {
         <ProductGallery 
           productId={product.id} 
           mainImage={product.image_url} 
+          selectedColor={selectedColor}
         />
         
         {/* Product Details */}

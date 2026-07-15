@@ -6,10 +6,20 @@ import { supabase } from '../lib/supabase';
 interface ProductGalleryProps {
   productId: string;
   mainImage: string;
+  selectedColor?: string;
 }
 
-export default function ProductGallery({ productId, mainImage }: ProductGalleryProps) {
+function normalizeColor(value: string) {
+  return value
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .trim();
+}
+
+export default function ProductGallery({ productId, mainImage, selectedColor }: ProductGalleryProps) {
   const [images, setImages] = useState<string[]>([]);
+  const [imageRows, setImageRows] = useState<ProductImage[]>([]);
   const [currentImage, setCurrentImage] = useState<string>(mainImage);
   const [loading, setLoading] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -31,12 +41,15 @@ export default function ProductGallery({ productId, mainImage }: ProductGalleryP
         setCurrentIndex(0);
         setCurrentImage(mainImage);
       } else if (data && data.length > 0) {
-        const imageUrls = data.map((img: ProductImage) => img.image_url);
+        const rows = data as ProductImage[];
+        const imageUrls = rows.map((img) => img.image_url);
         const mergedImages = imageUrls.includes(mainImage) ? imageUrls : [mainImage, ...imageUrls];
+        setImageRows(rows);
         setImages(mergedImages);
         setCurrentIndex(0);
         setCurrentImage(mergedImages[0]);
       } else {
+        setImageRows([]);
         setImages([mainImage]);
         setCurrentIndex(0);
         setCurrentImage(mainImage);
@@ -54,6 +67,21 @@ export default function ProductGallery({ productId, mainImage }: ProductGalleryP
       setLoading(false);
     }
   }, [productId, mainImage]);
+
+  useEffect(() => {
+    if (!selectedColor || imageRows.length === 0) return;
+
+    const selected = normalizeColor(selectedColor);
+    const matchingImage = imageRows.find((image) => image.color && normalizeColor(image.color) === selected);
+
+    if (!matchingImage) return;
+
+    const index = images.findIndex((image) => image === matchingImage.image_url);
+    if (index === -1) return;
+
+    setCurrentIndex(index);
+    setCurrentImage(images[index]);
+  }, [selectedColor, imageRows, images]);
 
   useEffect(() => {
     const handleKeyNavigation = (event: KeyboardEvent) => {
