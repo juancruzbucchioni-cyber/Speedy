@@ -1,8 +1,9 @@
 ﻿import { useState, useEffect, memo } from 'react';
-import { X, ShoppingCart, Star, Plus, Minus } from 'lucide-react';
-import { Product } from '../types/supabase';
+import { ChevronLeft, ChevronRight, X, ShoppingCart, Star, Plus, Minus } from 'lucide-react';
+import { Product, ProductImage } from '../types/supabase';
 import { useCartStore } from '../store/cartStore';
 import { formatProductPrice } from '../lib/currency';
+import { supabase } from '../lib/supabase';
 
 interface QuickViewProps {
   product: Product;
@@ -19,11 +20,55 @@ const QuickView = memo(function QuickView({ product, onClose }: QuickViewProps) 
   const cartItems = useCartStore((state) => state.items);
   const updateQuantity = useCartStore((state) => state.updateQuantity);
   const [isInCart, setIsInCart] = useState(false);
+  const [images, setImages] = useState<string[]>([product.image_url]);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const isOnRequest = product.price <= 0;
+
+  const currentImage = images[currentImageIndex] || product.image_url;
 
   useEffect(() => {
     setSelectedColor(availableColors[0]);
   }, [product.id]);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    async function loadImages() {
+      const { data, error } = await supabase
+        .from('product_images')
+        .select('*')
+        .eq('product_id', product.id)
+        .order('is_primary', { ascending: false })
+        .order('display_order', { ascending: true });
+
+      if (!isMounted) return;
+
+      if (error || !data || data.length === 0) {
+        setImages([product.image_url]);
+        setCurrentImageIndex(0);
+        return;
+      }
+
+      const imageUrls = (data as ProductImage[]).map((image) => image.image_url);
+      const mergedImages = imageUrls.includes(product.image_url) ? imageUrls : [product.image_url, ...imageUrls];
+      setImages(mergedImages);
+      setCurrentImageIndex(0);
+    }
+
+    loadImages();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [product.id, product.image_url]);
+
+  const showPreviousImage = () => {
+    setCurrentImageIndex((index) => (index - 1 + images.length) % images.length);
+  };
+
+  const showNextImage = () => {
+    setCurrentImageIndex((index) => (index + 1) % images.length);
+  };
 
   useEffect(() => {
     // Check if product is already in cart
@@ -74,13 +119,52 @@ const QuickView = memo(function QuickView({ product, onClose }: QuickViewProps) 
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6">
           <div className="bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden">
-            <img
-              src={product.image_url}
-              alt={product.name}
-              className="w-full h-full object-contain"
-              loading="lazy"
-              decoding="async"
-            />
+            <div className="relative flex min-h-80 items-center justify-center">
+              <img
+                src={currentImage}
+                alt={product.name}
+                className="h-80 w-full object-contain"
+                loading="lazy"
+                decoding="async"
+              />
+              {images.length > 1 ? (
+                <>
+                  <button
+                    type="button"
+                    onClick={showPreviousImage}
+                    className="absolute left-3 top-1/2 -translate-y-1/2 rounded-full bg-black/70 p-2 text-white shadow-md transition-colors hover:bg-primary"
+                    aria-label="Imagen anterior"
+                  >
+                    <ChevronLeft className="h-5 w-5" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={showNextImage}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-black/70 p-2 text-white shadow-md transition-colors hover:bg-primary"
+                    aria-label="Imagen siguiente"
+                  >
+                    <ChevronRight className="h-5 w-5" />
+                  </button>
+                </>
+              ) : null}
+            </div>
+            {images.length > 1 ? (
+              <div className="flex gap-2 overflow-x-auto border-t border-white/10 bg-black/20 p-3">
+                {images.map((image, index) => (
+                  <button
+                    key={`${image}-${index}`}
+                    type="button"
+                    onClick={() => setCurrentImageIndex(index)}
+                    className={`h-16 w-16 shrink-0 overflow-hidden rounded-md border-2 transition-all ${
+                      currentImageIndex === index ? 'border-primary opacity-100' : 'border-transparent opacity-70 hover:opacity-100'
+                    }`}
+                    aria-label={`Ver imagen ${index + 1}`}
+                  >
+                    <img src={image} alt={`Miniatura ${index + 1}`} className="h-full w-full object-cover" />
+                  </button>
+                ))}
+              </div>
+            ) : null}
           </div>
           
           <div className="flex flex-col">
