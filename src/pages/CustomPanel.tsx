@@ -136,7 +136,7 @@ function parseProductImageInput(value: string): ProductImageInput[] {
     .map((line) => line.trim())
     .filter(Boolean)
     .map((line) => {
-      const colorMatch = line.match(/^([^|:]+)\s*[|:]\s*(https?:\/\/\S+|\/\S+)/i);
+      const colorMatch = line.match(/^(.+?)\s*(?:-|[|:])\s*(https?:\/\/\S+|\/\S+)/i);
 
       if (colorMatch) {
         return {
@@ -153,7 +153,7 @@ function parseProductImageInput(value: string): ProductImageInput[] {
 }
 
 function formatProductImageInput(image: ProductImage) {
-  return image.color ? `${image.color} | ${image.image_url}` : image.image_url;
+  return image.color ? `${image.color} - ${image.image_url}` : image.image_url;
 }
 
 function normalizeMatch(value: string) {
@@ -865,7 +865,7 @@ export default function CustomPanel() {
                 value={productForm.extra_images}
                 onPaste={(e) => pasteProductImage(e, 'extra')}
                 onChange={(e) => setProductForm({ ...productForm, extra_images: e.target.value })}
-                placeholder="Pega URLs o imagenes. Para color: Rojo | https://..."
+                placeholder="Pega URLs o imagenes. Para color: Rojo - https://..."
               />
             </label>
             <div className="flex gap-2">
