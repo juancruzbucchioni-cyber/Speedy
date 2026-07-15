@@ -548,17 +548,18 @@ export default function CustomPanel() {
     await loadData();
   };
 
-  const uploadProductFiles = async (files: FileList | null, mode: 'main' | 'extra') => {
-    if (!files || files.length === 0) return;
+  const uploadProductFiles = async (files: FileList | File[] | null, mode: 'main' | 'extra') => {
+    const filesToUpload = files ? Array.from(files) : [];
+    if (filesToUpload.length === 0) return;
 
     setUploading(true);
     setMessage('');
 
     const uploadedUrls: string[] = [];
 
-    for (const file of Array.from(files)) {
-      const extension = file.name.split('.').pop() || 'jpg';
-      const safeName = file.name
+    for (const file of filesToUpload) {
+      const extension = file.name.split('.').pop() || file.type.split('/').pop() || 'jpg';
+      const safeName = (file.name || `imagen-${Date.now()}`)
         .replace(/\.[^/.]+$/, '')
         .toLowerCase()
         .replace(/[^a-z0-9]+/g, '-')
@@ -597,6 +598,18 @@ export default function CustomPanel() {
 
     setMessage('Imagenes subidas correctamente. Ahora toca Guardar producto.');
     setUploading(false);
+  };
+
+  const pasteProductImage = async (event: { clipboardData: DataTransfer; preventDefault: () => void }, mode: 'main' | 'extra') => {
+    const imageFiles = Array.from(event.clipboardData.items)
+      .filter((item) => item.kind === 'file' && item.type.startsWith('image/'))
+      .map((item) => item.getAsFile())
+      .filter((file): file is File => Boolean(file));
+
+    if (imageFiles.length === 0) return;
+
+    event.preventDefault();
+    await uploadProductFiles(imageFiles, mode);
   };
 
   const deleteProduct = async (productId: string) => {
@@ -794,13 +807,32 @@ export default function CustomPanel() {
               Imagen principal
               <input type="file" accept="image/*" className={fieldClass} disabled={uploading} onChange={(e) => uploadProductFiles(e.target.files, 'main')} />
             </label>
-            <label className={labelClass}>Imagen principal URL<input required className={fieldClass} value={productForm.image_url} onChange={(e) => setProductForm({ ...productForm, image_url: e.target.value })} /></label>
+            <label className={labelClass}>
+              Imagen principal URL
+              <input
+                required
+                className={fieldClass}
+                value={productForm.image_url}
+                onPaste={(e) => pasteProductImage(e, 'main')}
+                onChange={(e) => setProductForm({ ...productForm, image_url: e.target.value })}
+                placeholder="Pega una URL o una imagen copiada con Ctrl + V"
+              />
+            </label>
             <label className={labelClass}>Colores separados por coma<input className={fieldClass} value={productForm.colors} onChange={(e) => setProductForm({ ...productForm, colors: e.target.value })} /></label>
             <label className={labelClass}>
               Subir mas imagenes
               <input type="file" accept="image/*" multiple className={fieldClass} disabled={uploading} onChange={(e) => uploadProductFiles(e.target.files, 'extra')} />
             </label>
-            <label className={labelClass}>Mas imagenes, una por linea<textarea className={`${fieldClass} min-h-20`} value={productForm.extra_images} onChange={(e) => setProductForm({ ...productForm, extra_images: e.target.value })} /></label>
+            <label className={labelClass}>
+              Mas imagenes, una por linea
+              <textarea
+                className={`${fieldClass} min-h-20`}
+                value={productForm.extra_images}
+                onPaste={(e) => pasteProductImage(e, 'extra')}
+                onChange={(e) => setProductForm({ ...productForm, extra_images: e.target.value })}
+                placeholder="Pega URLs o imagenes copiadas con Ctrl + V"
+              />
+            </label>
             <div className="flex gap-2">
               <button disabled={saving || uploading} className="inline-flex items-center gap-2 rounded-md bg-white px-4 py-2 font-bold text-white disabled:opacity-60">
                 <Save className="h-4 w-4" />
