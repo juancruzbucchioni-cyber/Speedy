@@ -41,6 +41,16 @@ export default function Cart() {
   const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const shipping = 0;
   const total = subtotal + shipping;
+  const hasPendingPrices = cartItems.some((item) => item.price <= 0);
+
+  const formatItemPrice = (price: number) =>
+    price > 0 ? formatARS(Math.round(price)) : 'Precio a confirmar';
+
+  const formatOrderTotal = () => {
+    if (!hasPendingPrices) return formatARS(Math.round(total));
+    if (total <= 0) return 'Precio total a confirmar';
+    return `${formatARS(Math.round(total))} + precios a confirmar`;
+  };
 
   const checkoutByWhatsApp = async () => {
     if (cartItems.length === 0) return;
@@ -71,14 +81,14 @@ export default function Cart() {
 
       const lines = cartItems.map((item, index) => {
         const colorText = item.color ? ` | Color: ${item.color}` : '';
-        return `${index + 1}. ${item.name}${colorText} | Cantidad: ${item.quantity} | Unit: ${formatARS(Math.round(item.price))} | Subtotal: ${formatARS(Math.round(item.price * item.quantity))}`;
+        return `${index + 1}. ${item.name}${colorText} | Cantidad: ${item.quantity} | Unit: ${formatItemPrice(item.price)} | Subtotal: ${formatItemPrice(item.price * item.quantity)}`;
       });
 
       const message =
         `Hola Speedy Repuestos, ya hice el pedido ${orderId} desde la web.\n\n` +
         `${lines.join('\n')}\n\n` +
         `Forma de pago: ${paymentLabel(paymentMethod)}\n` +
-        `Total: ${formatARS(Math.round(total))}\n\n` +
+        `Total: ${formatOrderTotal()}\n\n` +
         `Quedo atento/a para coordinar.`;
 
       const url = `https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(message)}`;
@@ -91,14 +101,14 @@ export default function Cart() {
 
     const lines = cartItems.map((item, index) => {
       const colorText = item.color ? ` | Color: ${item.color}` : '';
-      return `${index + 1}. ${item.name}${colorText} | Cantidad: ${item.quantity} | Unit: ${formatARS(Math.round(item.price))} | Subtotal: ${formatARS(Math.round(item.price * item.quantity))}`;
+      return `${index + 1}. ${item.name}${colorText} | Cantidad: ${item.quantity} | Unit: ${formatItemPrice(item.price)} | Subtotal: ${formatItemPrice(item.price * item.quantity)}`;
     });
 
     const message =
       `Hola Speedy Repuestos, quiero comprar estos productos:\n\n` +
       `${lines.join('\n')}\n\n` +
       `Forma de pago: ${paymentLabel(paymentMethod)}\n` +
-      `Total: ${formatARS(Math.round(total))}\n\n` +
+      `Total: ${formatOrderTotal()}\n\n` +
       `Quedo atento/a para coordinar.`;
 
     const url = `https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(message)}`;
@@ -133,7 +143,7 @@ export default function Cart() {
                   <img src={item.image} alt={item.name} className="w-16 h-16 object-cover rounded-md mr-4" />
                   <div>
                     <h2 className="text-lg font-semibold text-white">{item.name}</h2>
-                    <p className="text-gray-300">{formatARS(Math.round(item.price))}</p>
+                    <p className="text-gray-300">{formatItemPrice(item.price)}</p>
                     {item.color ? <p className="text-sm text-gray-200">Color: {item.color}</p> : null}
                     <div className="flex items-center mt-2">
                       <button
@@ -154,7 +164,7 @@ export default function Cart() {
                   </div>
                 </div>
                 <div className="flex flex-col items-end">
-                  <p className="font-semibold text-white mb-2">{formatARS(Math.round(item.price * item.quantity))}</p>
+                  <p className="font-semibold text-white mb-2">{formatItemPrice(item.price * item.quantity)}</p>
                   <button onClick={() => removeItem(item.id)} className="text-red-400 hover:text-gray-300 transition-colors">
                     <Trash2 className="h-5 w-5" />
                   </button>
@@ -180,7 +190,7 @@ export default function Cart() {
             <div className="space-y-2 mb-4">
               <div className="flex justify-between text-gray-300">
                 <span>Subtotal ({cartItems.reduce((sum, item) => sum + item.quantity, 0)} items)</span>
-                <span>{formatARS(Math.round(subtotal))}</span>
+                <span>{hasPendingPrices ? formatOrderTotal() : formatARS(Math.round(subtotal))}</span>
               </div>
               <div className="flex justify-between text-gray-300">
                 <span>Envio</span>
@@ -189,7 +199,7 @@ export default function Cart() {
               <div className="border-t border-gray-700 pt-2 mt-2">
                 <div className="flex justify-between font-semibold text-lg text-white">
                   <span>Total</span>
-                  <span className="text-white">{formatARS(Math.round(total))}</span>
+                  <span className="text-right text-white">{formatOrderTotal()}</span>
                 </div>
               </div>
             </div>

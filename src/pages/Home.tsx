@@ -139,6 +139,9 @@ export default function Home() {
           </Link>
 
           <div className="mt-8 overflow-hidden">
+            <p className="text-center text-xs font-medium uppercase tracking-widest text-white/45">
+              Opiniones de muestra para visualizar el catalogo
+            </p>
             <div className="reviews-ticker-track flex items-center py-2">
               {[...clientReviews, ...clientReviews].map((review, index) => (
                 <article
