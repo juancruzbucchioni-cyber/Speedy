@@ -1,4 +1,4 @@
-﻿import { Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useEffect, useMemo, useState } from 'react';
 import FeaturedProducts from '../components/FeaturedProducts';
 import { isSupabaseConfigured, supabase } from '../lib/supabase';

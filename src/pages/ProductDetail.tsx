@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ShoppingCart, Star, ArrowLeft, Info, Package, Truck, Shield } from 'lucide-react';
 import { supabase } from '../lib/supabase';
