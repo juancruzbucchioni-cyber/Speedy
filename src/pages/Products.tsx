@@ -1,6 +1,6 @@
 ﻿import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { isSupabaseConfigured, supabase } from '../lib/supabase';
 import { useCartStore } from '../store/cartStore';
 import ProductCard from '../components/ProductCard';
@@ -43,7 +43,7 @@ export default function ProductosPage() {
     }
   }, [modelParam, selectedModel]);
 
-  const fetchProductos = async () => {
+  const fetchProductos = useCallback(async () => {
     if (!isSupabaseConfigured) {
       setProductos([]);
       setLoading(false);
@@ -95,7 +95,7 @@ export default function ProductosPage() {
     }
     
     setLoading(false);
-  };
+  }, [priceRange, searchQuery, selectedCategory, selectedModel, sortBy]);
 
   const fetchCategorias = async () => {
     if (!isSupabaseConfigured) {
@@ -156,7 +156,7 @@ export default function ProductosPage() {
     }, 300); // Add a small delay to prevent rapid re-fetching
 
     return () => clearTimeout(debounceTimer);
-  }, [selectedCategory, selectedModel, priceRange, searchQuery, sortBy]);
+  }, [fetchProductos]);
 
   const resetFiltros = () => {
     setSelectedCategory('');
@@ -169,13 +169,6 @@ export default function ProductosPage() {
     () => [...products].sort((a, b) => a.name.localeCompare(b.name, 'es', { sensitivity: 'base' })),
     [products]
   );
-
-  const handleQuickView = (e: React.MouseEvent, product: Product) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setQuickViewProduct(product);
-    setIsQuickViewOpen(true);
-  };
 
   return (
     <div className="container mx-auto py-10">

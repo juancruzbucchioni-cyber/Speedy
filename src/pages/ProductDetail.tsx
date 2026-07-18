@@ -1,16 +1,15 @@
 ﻿import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ShoppingCart, Star, ArrowLeft, Info, Package, X, Truck, Shield } from 'lucide-react';
+import { ShoppingCart, Star, ArrowLeft, Info, Package, Truck, Shield } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useCartStore } from '../store/cartStore';
-import { Product, Review, ProductImage } from '../types/supabase';
+import { Product, Review } from '../types/supabase';
 import ProductGallery from '../components/ProductGallery';
-import { formatARS, formatProductPrice } from '../lib/currency';
+import { formatProductPrice } from '../lib/currency';
 
 export default function ProductDetail() {
   const { id } = useParams<{ id: string }>();
   const [product, setProduct] = useState<Product | null>(null);
-  const [productImages, setProductImages] = useState<ProductImage[]>([]);
   const [reviews, setResenas] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
@@ -39,20 +38,6 @@ export default function ProductDetail() {
         console.error('Error fetching product:', productError);
       } else if (productData) {
         setProduct(productData);
-        
-        // Fetch product images
-        const { data: imagesData, error: imagesError } = await supabase
-          .from('product_images')
-          .select('*')
-          .eq('product_id', id)
-          .order('is_primary', { ascending: false })
-          .order('display_order', { ascending: true });
-          
-        if (imagesError) {
-          console.error('Error fetching product images:', imagesError);
-        } else {
-          setProductImages(imagesData || []);
-        }
         
         // Fetch reviews for this product
         const { data: reviewsData, error: reviewsError } = await supabase

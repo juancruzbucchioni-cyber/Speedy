@@ -36,17 +36,17 @@ export default function Auth() {
       if (isSignUp) {
         // Handle sign up
         if (!username.trim()) {
-          setAuthError("Username is required");
+          setAuthError('El nombre de usuario es obligatorio');
           setIsSubmitting(false);
           return;
         }
         
-        const { error, data } = await signUp(email, password, username);
+        const { error } = await signUp(email, password, username);
         if (error) {
           setAuthError(error.message);
         } else {
           // Show success message for sign up
-          setSuccessMessage("Account created successfully! You are now signed in.");
+          setSuccessMessage('Cuenta creada correctamente. Ya iniciaste sesion.');
           // Redirect to home page after a short delay
           setTimeout(() => {
             navigate('/');
@@ -66,8 +66,8 @@ export default function Auth() {
           }, 1000);
         }
       }
-    } catch (error: any) {
-      setAuthError(error.message || 'An error occurred during authentication');
+    } catch (error: unknown) {
+      setAuthError(error instanceof Error ? error.message : 'Ocurrio un error durante la autenticacion');
     } finally {
       setIsSubmitting(false);
     }
@@ -102,7 +102,7 @@ export default function Auth() {
           {isSignUp && (
             <div>
               <label htmlFor="username" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Username *
+                Nombre de usuario *
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -115,7 +115,7 @@ export default function Auth() {
                   onChange={(e) => setUsername(e.target.value)}
                   required
                   className="pl-10 w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary"
-                  placeholder="Choose a username"
+                  placeholder="Elegi un nombre de usuario"
                 />
               </div>
             </div>
@@ -123,7 +123,7 @@ export default function Auth() {
           
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              Email Address *
+              Correo electronico *
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -136,14 +136,14 @@ export default function Auth() {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 className="pl-10 w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary"
-                placeholder="your@email.com"
+                placeholder="tu@email.com"
               />
             </div>
           </div>
           
           <div>
             <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              Password *
+              Contrasena *
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -156,7 +156,7 @@ export default function Auth() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 className="pl-10 w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary"
-                placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
+                placeholder="••••••••"
                 minLength={6}
               />
             </div>
@@ -197,17 +197,17 @@ export default function Auth() {
             }}
             className="text-primary hover:text-gray-300 transition-colors link-hover"
           >
-            {isSignUp ? 'Already have an account? Iniciar sesion' : 'Need an account? Registrarse'}
+            {isSignUp ? '¿Ya tenes una cuenta? Iniciar sesion' : '¿No tenes una cuenta? Registrarse'}
           </button>
         </div>
         
         <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
           <p className="text-sm text-gray-600 dark:text-gray-400 text-center">
-            By signing in or creating an account, you agree to our{' '}
+            Al iniciar sesion o crear una cuenta, aceptas nuestros{' '}
             <a href="/terms" className="text-primary hover:text-gray-300 transition-colors link-hover">
               Terminos del servicio
             </a>{' '}
-            and{' '}
+            y nuestra{' '}
             <a href="/privacy" className="text-primary hover:text-gray-300 transition-colors link-hover">
               Politica de privacidad
             </a>

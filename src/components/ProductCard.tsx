@@ -39,15 +39,25 @@ const ProductCard = memo(function ProductCard({
     onAddToCart(product);
   };
 
-  const openProductDetail = (event: React.MouseEvent) => {
-    event.preventDefault();
-    event.stopPropagation();
+  const openProductDetail = () => {
     navigate(`/products/${product.id}`);
+  };
+
+  const handleCardKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (event.target !== event.currentTarget) return;
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      openProductDetail();
+    }
   };
 
   return (
     <div
       onClick={openProductDetail}
+      onKeyDown={handleCardKeyDown}
+      role="link"
+      tabIndex={0}
+      aria-label={`Ver detalle de ${product.name}`}
       className="product-sale-card group flex h-full cursor-pointer flex-col will-change-transform"
     >
       <div className="relative overflow-hidden rounded-t-[28px] bg-zinc-900">
