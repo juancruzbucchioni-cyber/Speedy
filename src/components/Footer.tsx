@@ -1,4 +1,4 @@
-﻿import { Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Instagram, MapPin, Phone } from 'lucide-react';
 
 const INSTAGRAM_URL = 'https://www.instagram.com/speedyrepuestos/';
@@ -41,15 +41,10 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="mt-8 flex flex-col items-center justify-between border-t border-white/10 pt-6 md:flex-row">
+        <div className="mt-8 flex items-center justify-center border-t border-white/10 pt-6 md:justify-start">
           <p className="flex flex-wrap items-center justify-center gap-1 text-sm text-gray-200 md:justify-start">
             <span>© {new Date().getFullYear()} Speedy Repuestos. Todos los derechos reservados.</span>
           </p>
-          <div className="mt-4 flex space-x-6 md:mt-0">
-            <Link to="/privacy" className="text-sm text-gray-200 hover:text-white hover:underline">Privacidad</Link>
-            <Link to="/terms" className="text-sm text-gray-200 hover:text-white hover:underline">Términos</Link>
-            <Link to="/sitemap" className="text-sm text-gray-200 hover:text-white hover:underline">Mapa del sitio</Link>
-          </div>
         </div>
       </div>
     </footer>
