@@ -171,10 +171,10 @@ export default function ProductosPage() {
   );
 
   return (
-    <div className="container mx-auto py-10">
+    <div className="container mx-auto py-6 sm:py-10">
       <div className="mb-8 border border-primary/30 bg-black/45 backdrop-blur-sm rounded-lg p-4 md:p-6">
         <div className="flex justify-between items-center mb-4">
-          <h1 className="text-4xl md:text-6xl font-black tracking-wide text-white uppercase">
+          <h1 className="break-words text-2xl font-black uppercase tracking-wide text-white sm:text-4xl md:text-5xl lg:text-6xl">
             {searchQuery ? `Resultados para "${searchQuery}"` : selectedCategory ? `Productos por categoria: ${selectedCategory}` : 'Productos por categoria'}
           </h1>
         </div>
@@ -182,13 +182,13 @@ export default function ProductosPage() {
           Selecciona tu repuesto ideal con el estilo de <span className="text-primary font-bold">Speedy Repuestos</span>.
         </p>
       </div>
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="font-brand text-xl font-bold text-primary uppercase tracking-widest">
+      <div className="mb-6 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <h2 className="font-brand break-words text-lg font-bold uppercase tracking-wider text-primary sm:text-xl sm:tracking-widest">
           {selectedCategory || 'Todos los productos'}
         </h2>
         <button
           onClick={() => setShowFiltros(!showFiltros)}
-          className="flex items-center space-x-2 bg-black/60 text-white border border-primary/40 px-4 py-2 rounded-lg md:hidden"
+          className="flex min-h-11 items-center justify-center space-x-2 rounded-lg border border-primary/40 bg-black/60 px-4 py-2 text-white md:hidden"
         >
           <Filter className="h-5 w-5" />
           <span>Filtros</span>
@@ -198,7 +198,7 @@ export default function ProductosPage() {
       <div className="flex flex-col md:flex-row gap-6">
         {/* Filtros Sidebar */}
         <aside className={`md:w-1/4 ${showFiltros ? 'block' : 'hidden md:block'} transition-all duration-300`}>
-          <div className="bg-black/60 backdrop-blur-sm p-6 rounded-lg border border-primary/30 shadow-md sticky top-4">
+          <div className="sticky top-4 rounded-lg border border-primary/30 bg-black/60 p-4 shadow-md backdrop-blur-sm sm:p-6">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-semibold text-white uppercase tracking-wider">
                 Filtros
@@ -343,7 +343,7 @@ export default function ProductosPage() {
               <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
             </div>
           ) : visibleProducts.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">
               {visibleProducts.map((product) => (
                 <div key={product.id} className="transform-gpu">
                   <ProductCard

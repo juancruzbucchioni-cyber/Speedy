@@ -159,13 +159,13 @@ export default function ProductDetail() {
     : ['Negro', 'Blanco', 'Gris'];
 
   return (
-    <div className="container py-10">
+    <div className="container py-6 sm:py-10">
       <Link to="/products" className="text-primary hover:underline mb-6 inline-block link-hover">
         <ArrowLeft className="inline mr-2 h-4 w-4" />
         Volver a productos
       </Link>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 md:gap-8 lg:gap-10">
         {/* Product Image Gallery */}
         <ProductGallery 
           productId={product.id} 
@@ -175,7 +175,7 @@ export default function ProductDetail() {
         
         {/* Product Details */}
         <div>
-          <h1 className="text-3xl font-bold text-white mb-2">
+          <h1 className="break-words text-2xl font-bold text-white sm:text-3xl">
             {product.name}
           </h1>
           
@@ -198,7 +198,7 @@ export default function ProductDetail() {
             </span>
           </div>
           
-          <p className="text-3xl font-black text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.35)] mb-4">
+          <p className="mb-4 break-words text-2xl font-black text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.35)] sm:text-3xl">
             {formatProductPrice(Math.round(product.price))}
           </p>
           
@@ -273,7 +273,7 @@ export default function ProductDetail() {
           </button>
           
           {/* Envio & Returns Info */}
-          <div className="mt-6 grid grid-cols-2 gap-4">
+          <div className="mt-6 grid grid-cols-1 gap-3 min-[420px]:grid-cols-2 sm:gap-4">
             <div className="flex items-center">
               <Truck className="h-5 w-5 text-primary mr-2" />
               <span className="text-sm text-gray-200">Envio a todo el pais</span>
@@ -300,7 +300,7 @@ export default function ProductDetail() {
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
             Productos relacionados
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4 md:gap-6">
             {relatedProductos.map((relatedProduct) => (
               <Link 
                 key={relatedProduct.id} 

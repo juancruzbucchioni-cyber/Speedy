@@ -30,6 +30,12 @@ const ProductCard = memo(function ProductCard({
     event.preventDefault();
     event.stopPropagation();
 
+    if (isOnRequest) {
+      const message = `Hola Speedy Repuestos, quiero consultar por ${product.name}. Modelo de moto: _____.`;
+      window.open(`https://wa.me/5403534099785?text=${encodeURIComponent(message)}`, '_blank', 'noopener,noreferrer');
+      return;
+    }
+
     const existingItem = cartItems.find((item: { product_id: string }) => item.product_id === product.id);
     if (existingItem) {
       useCartStore.getState().updateQuantity(existingItem.id, existingItem.quantity + 1);
@@ -64,7 +70,7 @@ const ProductCard = memo(function ProductCard({
         <img
           src={product.image_url}
           alt={product.name}
-          className="h-64 w-full object-contain p-4 transition-transform duration-500 ease-in-out group-hover:scale-105"
+          className="h-52 w-full object-contain p-3 transition-transform duration-500 ease-in-out group-hover:scale-105 sm:h-56 sm:p-4 lg:h-64"
           loading="lazy"
           decoding="async"
         />
@@ -82,34 +88,34 @@ const ProductCard = memo(function ProductCard({
         )}
       </div>
 
-      <div className="flex flex-grow flex-col border-t border-white/15 p-5 text-center">
+      <div className="flex flex-grow flex-col border-t border-white/15 p-4 text-center sm:p-5">
         <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.25em] text-red-300">
           {product.category}
         </p>
-        <h3 className="min-h-14 text-xl font-bold leading-tight text-white">
+        <h3 className="min-h-12 text-lg font-bold leading-tight text-white sm:min-h-14 sm:text-xl">
           {product.name}
         </h3>
         <p className="mt-3 line-clamp-2 flex-grow text-sm text-gray-300">
           {product.description}
         </p>
         <div className="mt-4">
-          <p className="text-3xl font-black leading-none text-white">
+          <p className="break-words text-2xl font-black leading-none text-white sm:text-3xl">
             {formatProductPrice(Math.round(product.price))}
           </p>
         </div>
         <div className="mt-auto pt-5">
           <button
             onClick={handleAddToCart}
-            disabled={product.stock === 0}
-            className={`flex w-full items-center justify-center gap-2 rounded-full py-3 text-sm font-black uppercase transition-all duration-300 active:scale-95 ${
-              product.stock > 0
+            disabled={!isOnRequest && product.stock === 0}
+            className={`flex min-h-11 w-full items-center justify-center gap-2 rounded-full px-3 py-2.5 text-sm font-black uppercase transition-all duration-300 active:scale-95 sm:py-3 ${
+              product.stock > 0 || isOnRequest
                 ? 'bg-red-600 text-white hover:bg-red-700'
                 : 'cursor-not-allowed bg-gray-500/60 text-gray-300'
             }`}
-            aria-label={product.stock > 0 ? (isInCart ? 'Actualizar carrito' : 'Agregar al carrito') : 'Sin stock'}
+            aria-label={isOnRequest ? 'Consultar por WhatsApp' : product.stock > 0 ? (isInCart ? 'Actualizar carrito' : 'Agregar al carrito') : 'Sin stock'}
           >
             <ShoppingCart className="h-5 w-5" />
-            <span>{product.stock > 0 ? (isInCart ? 'Listo' : 'Agregar al carrito') : 'Sin stock'}</span>
+            <span>{isOnRequest ? 'Consultar por WhatsApp' : product.stock > 0 ? (isInCart ? 'Listo' : 'Agregar al carrito') : 'Sin stock'}</span>
           </button>
         </div>
       </div>

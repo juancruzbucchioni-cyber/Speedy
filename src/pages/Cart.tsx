@@ -117,8 +117,8 @@ export default function Cart() {
   };
 
   return (
-    <section className="container py-10">
-      <h1 className="text-3xl font-bold text-white mb-6">Tu carrito</h1>
+    <section className="container py-6 sm:py-10">
+      <h1 className="mb-6 text-2xl font-bold text-white sm:text-3xl">Tu carrito</h1>
 
       {cartItems.length === 0 ? (
         <div className="bg-black/55 backdrop-blur-sm p-8 rounded-lg border border-primary/30 text-center">
@@ -132,30 +132,30 @@ export default function Cart() {
           </Link>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="md:col-span-2 space-y-4">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3 lg:gap-8">
+          <div className="space-y-4 lg:col-span-2">
             {cartItems.map((item) => (
               <div
                 key={item.id}
-                className="flex items-center justify-between bg-black/55 backdrop-blur-sm p-4 rounded-lg border border-primary/30"
+                className="flex flex-col gap-4 rounded-lg border border-primary/30 bg-black/55 p-3 backdrop-blur-sm sm:flex-row sm:items-center sm:justify-between sm:p-4"
               >
-                <div className="flex items-center">
-                  <img src={item.image} alt={item.name} className="w-16 h-16 object-cover rounded-md mr-4" />
-                  <div>
-                    <h2 className="text-lg font-semibold text-white">{item.name}</h2>
+                <div className="flex min-w-0 items-center">
+                  <img src={item.image} alt={item.name} className="mr-3 h-20 w-20 shrink-0 rounded-md object-cover sm:mr-4 sm:h-16 sm:w-16" />
+                  <div className="min-w-0">
+                    <h2 className="break-words text-base font-semibold text-white sm:text-lg">{item.name}</h2>
                     <p className="text-gray-300">{formatItemPrice(item.price)}</p>
                     {item.color ? <p className="text-sm text-gray-200">Color: {item.color}</p> : null}
                     <div className="flex items-center mt-2">
                       <button
                         onClick={() => handleQuantityChange(item.id, item.quantity - 1)}
-                        className="p-1 bg-gray-800 rounded-l-md hover:bg-gray-700"
+                        className="flex h-9 w-9 items-center justify-center rounded-l-md bg-gray-800 hover:bg-gray-700"
                       >
                         <Minus className="h-4 w-4 text-gray-300" />
                       </button>
-                      <span className="px-3 py-1 bg-gray-800 text-gray-200">{item.quantity}</span>
+                      <span className="flex h-9 min-w-9 items-center justify-center bg-gray-800 px-2 text-gray-200">{item.quantity}</span>
                       <button
                         onClick={() => handleQuantityChange(item.id, item.quantity + 1)}
-                        className="p-1 bg-gray-800 rounded-r-md hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="flex h-9 w-9 items-center justify-center rounded-r-md bg-gray-800 hover:bg-gray-700 disabled:cursor-not-allowed disabled:opacity-50"
                         disabled={item.quantity >= item.stock}
                       >
                         <Plus className="h-4 w-4 text-gray-300" />
@@ -163,9 +163,9 @@ export default function Cart() {
                     </div>
                   </div>
                 </div>
-                <div className="flex flex-col items-end">
+                <div className="flex w-full items-center justify-between sm:w-auto sm:flex-col sm:items-end">
                   <p className="font-semibold text-white mb-2">{formatItemPrice(item.price * item.quantity)}</p>
-                  <button onClick={() => removeItem(item.id)} className="text-red-400 hover:text-gray-300 transition-colors">
+                  <button onClick={() => removeItem(item.id)} aria-label={`Quitar ${item.name} del carrito`} className="flex h-11 w-11 items-center justify-center text-red-400 transition-colors hover:text-gray-300">
                     <Trash2 className="h-5 w-5" />
                   </button>
                 </div>
@@ -188,16 +188,16 @@ export default function Cart() {
               </div>
             ) : null}
             <div className="space-y-2 mb-4">
-              <div className="flex justify-between text-gray-300">
+              <div className="flex justify-between gap-4 text-gray-300">
                 <span>Subtotal ({cartItems.reduce((sum, item) => sum + item.quantity, 0)} items)</span>
                 <span>{hasPendingPrices ? formatOrderTotal() : formatARS(Math.round(subtotal))}</span>
               </div>
-              <div className="flex justify-between text-gray-300">
+              <div className="flex justify-between gap-4 text-gray-300">
                 <span>Envio</span>
                 <span>Gratis</span>
               </div>
               <div className="border-t border-gray-700 pt-2 mt-2">
-                <div className="flex justify-between font-semibold text-lg text-white">
+                <div className="flex justify-between gap-4 text-lg font-semibold text-white">
                   <span>Total</span>
                   <span className="text-right text-white">{formatOrderTotal()}</span>
                 </div>
