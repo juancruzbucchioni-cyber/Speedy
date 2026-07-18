@@ -1,5 +1,6 @@
 ﻿import { FormEvent, useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useCallback } from 'react';
 import { CheckCircle, Download, Edit, RefreshCw, Save, Search, Trash2 } from 'lucide-react';
 import { isSupabaseConfigured, supabase } from '../lib/supabase';
 import { useAuthStore } from '../store/authStore';
@@ -322,7 +323,7 @@ export default function CustomPanel() {
     });
   }, [testimonials]);
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     if (!isSupabaseConfigured || !user) return;
 
     const [{ data: productData }, { data: categoryData }, { data: testimonialsData }, { data: imagesData }, { data: debtorsData }] = await Promise.all([
@@ -343,11 +344,11 @@ export default function CustomPanel() {
       return acc;
     }, {});
     setProductImages(groupedImages);
-  };
+  }, [user]);
 
   useEffect(() => {
     loadData();
-  }, [user]);
+  }, [loadData]);
 
   const saveProduct = async (event: FormEvent) => {
     event.preventDefault();

@@ -22,7 +22,7 @@ export default function Offers() {
   useEffect(() => {
     async function loadOffers() {
       if (!isSupabaseConfigured) {
-        setProducts([]);
+        setOffers([]);
         setLoading(false);
         return;
       }

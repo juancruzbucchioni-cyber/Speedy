@@ -1,5 +1,5 @@
 ﻿import { create } from 'zustand';
-import { User } from '@supabase/supabase-js';
+import { AuthResponse, User } from '@supabase/supabase-js';
 import { isSupabaseConfigured, supabase } from '../lib/supabase';
 
 interface UserPerfil {
@@ -18,8 +18,8 @@ interface AuthState {
   setUser: (user: User | null) => void;
   setPerfil: (profile: UserPerfil | null) => void;
   checkUser: () => Promise<void>;
-  signIn: (email: string, password: string) => Promise<{ error: any | null }>;
-  signUp: (email: string, password: string, username: string) => Promise<{ error: any | null, data: any | null }>;
+  signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
+  signUp: (email: string, password: string, username: string) => Promise<{ error: Error | null, data: AuthResponse['data'] | null }>;
   signOut: () => Promise<void>;
   fetchUserPerfil: (userId: string) => Promise<void>;
 }
@@ -126,9 +126,9 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       }
       
       return { error };
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Sign in error:', error);
-      return { error };
+      return { error: error instanceof Error ? error : new Error('No se pudo iniciar sesion') };
     }
   },
   signUp: async (email, password, username) => {
@@ -183,9 +183,9 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       }
       
       return { error, data };
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Sign up error:', error);
-      return { error, data: null };
+      return { error: error instanceof Error ? error : new Error('No se pudo crear la cuenta'), data: null };
     }
   },
   signOut: async () => {

@@ -14,7 +14,7 @@ const QuickView = memo(function QuickView({ product, onClose }: QuickViewProps) 
   const [quantity, setQuantity] = useState(1);
   const availableColors = product.colors && product.colors.length > 0
     ? product.colors
-    : ['Black', 'White', 'Gray'];
+    : ['Negro', 'Blanco', 'Gris'];
   const [selectedColor, setSelectedColor] = useState<string>(availableColors[0]);
   const addItem = useCartStore((state) => state.addItem);
   const cartItems = useCartStore((state) => state.items);
@@ -27,8 +27,11 @@ const QuickView = memo(function QuickView({ product, onClose }: QuickViewProps) 
   const currentImage = images[currentImageIndex] || product.image_url;
 
   useEffect(() => {
-    setSelectedColor(availableColors[0]);
-  }, [product.id]);
+    const nextColors = product.colors && product.colors.length > 0
+      ? product.colors
+      : ['Negro', 'Blanco', 'Gris'];
+    setSelectedColor(nextColors[0]);
+  }, [product.colors, product.id]);
 
   useEffect(() => {
     let isMounted = true;
