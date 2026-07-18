@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { ProductImage } from '../types/supabase';
 import { supabase } from '../lib/supabase';
@@ -136,7 +136,7 @@ export default function ProductGallery({ productId, mainImage, selectedColor }: 
 
   if (loading) {
     return (
-      <div className="bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-lg flex items-center justify-center h-96">
+      <div className="flex h-64 items-center justify-center overflow-hidden rounded-lg bg-white shadow-lg dark:bg-gray-800 sm:h-80 md:h-96">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
       </div>
     );
@@ -148,7 +148,7 @@ export default function ProductGallery({ productId, mainImage, selectedColor }: 
         <img
           src={currentImage}
           alt="Producto"
-          className="w-full h-96 object-contain"
+          className="h-64 w-full object-contain sm:h-80 md:h-96"
         />
 
         {images.length > 1 && (
@@ -172,12 +172,12 @@ export default function ProductGallery({ productId, mainImage, selectedColor }: 
       </div>
 
       {images.length > 1 && (
-        <div className="flex justify-center mt-4 space-x-2 p-2">
+        <div className="mt-3 flex max-w-full justify-start gap-2 overflow-x-auto p-2 sm:mt-4 sm:justify-center">
           {images.map((image, index) => (
             <button
               key={index}
               onClick={() => handleThumbnailClick(index)}
-              className={`h-16 w-16 rounded-md overflow-hidden border-2 transition-all ${
+              className={`h-14 w-14 shrink-0 overflow-hidden rounded-md border-2 transition-all sm:h-16 sm:w-16 ${
                 currentIndex === index
                   ? 'border-primary scale-110'
                   : 'border-transparent opacity-70 hover:opacity-100'

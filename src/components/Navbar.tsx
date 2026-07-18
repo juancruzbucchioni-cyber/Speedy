@@ -42,7 +42,7 @@ export default function Navbar() {
   return (
     <nav className="sticky top-0 z-50 border-b border-red-950/80 bg-black text-white shadow-[0_8px_28px_rgba(127,29,29,0.24)]">
       <div
-        className={`mx-auto flex w-full max-w-7xl flex-col gap-3 px-4 transition-all duration-300 lg:flex-row lg:items-center lg:justify-between ${isScrolled ? 'py-2' : 'py-3'}`}
+        className={`mx-auto flex w-full max-w-7xl flex-col gap-2 px-3 transition-all duration-300 sm:gap-3 sm:px-4 lg:flex-row lg:items-center lg:justify-between ${isScrolled ? 'py-2' : 'py-3'}`}
       >
         {isAdminPanel ? (
           <div className="flex items-center" aria-label="Logo de Speedy Repuestos">
@@ -53,54 +53,54 @@ export default function Navbar() {
             />
           </div>
         ) : (
-          <Link to="/" className="flex items-center" aria-label="Volver al inicio de Speedy Repuestos">
+          <Link to="/" className="flex items-center justify-center lg:justify-start" aria-label="Volver al inicio de Speedy Repuestos">
             <img
               src="/branding/speedy-logo-final.png"
               alt="Speedy Repuestos"
-              className={`w-auto object-contain transition-all duration-300 ${isScrolled ? 'h-12 md:h-14' : 'h-14 md:h-16'}`}
+              className={`w-auto object-contain transition-all duration-300 ${isScrolled ? 'h-10 sm:h-12 md:h-14' : 'h-12 sm:h-14 md:h-16'}`}
             />
           </Link>
         )}
 
         {!isAdminPanel && (
-          <div className="order-3 flex flex-wrap items-center justify-center rounded-full border border-red-800/80 bg-zinc-950 px-5 py-2 text-xs font-bold text-white shadow-[0_0_18px_rgba(127,29,29,0.22)] md:order-none md:px-7 md:text-sm">
-            <Link to="/" className="min-w-16 px-2 text-center transition-colors hover:text-red-400">
+          <div className="order-3 grid w-full grid-cols-4 items-center rounded-xl border border-red-800/80 bg-zinc-950 px-1 py-1.5 text-[11px] font-bold text-white shadow-[0_0_18px_rgba(127,29,29,0.22)] sm:text-xs md:order-none md:flex md:w-auto md:justify-center md:rounded-full md:px-7 md:py-2 md:text-sm">
+            <Link to="/" className="min-w-0 px-1 text-center transition-colors hover:text-red-400 md:min-w-16 md:px-2">
               Inicio
             </Link>
-            <span className="text-red-900/80">|</span>
-            <Link to="/products" className="min-w-20 px-2 text-center transition-colors hover:text-red-400">
+            <span className="hidden text-red-900/80 md:inline">|</span>
+            <Link to="/products" className="min-w-0 px-1 text-center transition-colors hover:text-red-400 md:min-w-20 md:px-2">
               Productos
             </Link>
-            <span className="text-red-900/80">|</span>
+            <span className="hidden text-red-900/80 md:inline">|</span>
             <a
               href={INSTAGRAM_URL}
               target="_blank"
               rel="noreferrer"
-              className="min-w-20 px-2 text-center transition-colors hover:text-red-400"
+              className="min-w-0 px-1 text-center transition-colors hover:text-red-400 md:min-w-20 md:px-2"
             >
               Instagram
             </a>
-            <span className="text-red-900/80">|</span>
+            <span className="hidden text-red-900/80 md:inline">|</span>
             <a
               href={WHATSAPP_URL}
               target="_blank"
               rel="noreferrer"
-              className="min-w-20 px-2 text-center transition-colors hover:text-red-400"
+              className="min-w-0 px-1 text-center transition-colors hover:text-red-400 md:min-w-20 md:px-2"
             >
               Contacto
             </a>
           </div>
         )}
 
-        <div className="flex items-center justify-between gap-4 lg:justify-end">
-          <form onSubmit={handleSearch} className="w-full min-w-[180px] max-w-[260px]">
+        <div className="flex w-full items-center justify-between gap-2 lg:w-auto lg:justify-end lg:gap-4">
+          <form onSubmit={handleSearch} className="min-w-0 flex-1 sm:max-w-[320px] lg:w-[260px]">
             <div className="relative">
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(event) => setSearchQuery(event.target.value)}
                 placeholder="Buscar productos"
-                className="h-11 w-full rounded-full border border-red-800/70 bg-zinc-950 px-5 pr-11 text-sm font-bold text-white placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-primary"
+                className="h-10 w-full rounded-full border border-red-800/70 bg-zinc-950 px-4 pr-10 text-sm font-bold text-white placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-primary sm:h-11 sm:px-5 sm:pr-11"
               />
               <button
                 type="submit"
@@ -144,7 +144,7 @@ export default function Navbar() {
           ) : null}
           <Link
             to="/cart"
-            className="relative flex min-w-20 flex-col items-center gap-1 rounded-lg px-2 py-1.5 text-sm text-white transition-colors hover:bg-red-950/50 hover:text-red-300"
+            className="relative flex min-w-16 shrink-0 flex-col items-center gap-0.5 rounded-lg px-1 py-1 text-xs text-white transition-colors hover:bg-red-950/50 hover:text-red-300 sm:min-w-20 sm:gap-1 sm:px-2 sm:py-1.5 sm:text-sm"
           >
             <ShoppingCart className={`${isScrolled ? 'h-6 w-6' : 'h-7 w-7'}`} />
             {itemCount > 0 && (
@@ -152,7 +152,8 @@ export default function Navbar() {
                 {itemCount}
               </span>
             )}
-            <span>Mi carrito</span>
+            <span className="sm:hidden">Carrito</span>
+            <span className="hidden sm:inline">Mi carrito</span>
           </Link>
         </div>
       </div>

@@ -122,6 +122,7 @@
 html,
 body {
   min-height: 100%;
+  overflow-x: hidden;
   @apply transition-colors duration-300;
   color: #fff;
   background: #000;
@@ -139,7 +140,7 @@ body {
 
 /* Container utility override */
 .container {
-  @apply max-w-7xl mx-auto px-4;
+  @apply max-w-7xl mx-auto px-3 sm:px-4;
 }
 
 /* Buttons */
