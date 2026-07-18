@@ -41,9 +41,12 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="mt-8 flex items-center justify-center border-t border-white/10 pt-6 md:justify-start">
-          <p className="flex flex-wrap items-center justify-center gap-1 text-sm text-gray-200 md:justify-start">
-            <span>© {new Date().getFullYear()} Speedy Repuestos. Todos los derechos reservados.</span>
+        <div className="mt-8 border-t border-white/10 pt-6 text-center md:text-left">
+          <p className="text-sm text-gray-200">
+            © {new Date().getFullYear()} Speedy Repuestos. Todos los derechos reservados.
+          </p>
+          <p className="mt-2 text-[10px] tracking-[0.18em] text-white/30" aria-label="Sitio creado por Juan Cruz Bucchioni">
+            Juan Cruz Bucchioni
           </p>
         </div>
       </div>
